@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <rect width="120" height="120" fill="#120d0b"/>
+  <g transform="translate(60 60)">
+    <rect x="-36" y="-36" width="72" height="72" fill="#8f2518"/>
+    <rect x="-36" y="-36" width="72" height="72" fill="#c9792b" transform="rotate(45)"/>
+    <rect x="-25" y="-25" width="50" height="50" fill="#120d0b" transform="rotate(45)"/>
+    <rect x="-20" y="-20" width="40" height="40" fill="#f0dfbd" transform="rotate(45)"/>
+    <circle r="17" fill="#8f2518"/>
+    <circle r="10" fill="#e0a33a"/>
+    <circle r="4" fill="#120d0b"/>
+  </g>
+  <g fill="#6b7a3e">
+    <path d="M0 -14 L14 0 L0 14 L-14 0Z"/>
+    <path d="M120 -14 L134 0 L120 14 L106 0Z"/>
+    <path d="M0 106 L14 120 L0 134 L-14 120Z"/>
+    <path d="M120 106 L134 120 L120 134 L106 120Z"/>
+  </g>
+  <g fill="#e0a33a">
+    <path d="M0 -6 L6 0 L0 6 L-6 0Z"/><path d="M120 -6 L126 0 L120 6 L114 0Z"/>
+    <path d="M0 114 L6 120 L0 126 L-6 120Z"/><path d="M120 114 L126 120 L120 126 L114 120Z"/>
+  </g>
+  <rect x="5" y="5" width="110" height="110" fill="none" stroke="#f0dfbd" stroke-opacity=".45" stroke-width="1.2" stroke-dasharray="3 3"/>
+</svg>
