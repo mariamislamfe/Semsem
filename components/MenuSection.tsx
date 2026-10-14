@@ -56,7 +56,17 @@ function Table({ categories, isSample }: Props) {
   }, []);
 
   return (
-    <section id="sofra" className="relative bg-gradient-to-b from-ink via-soot to-soot px-4 py-24 md:px-8 md:py-32">
+    <section
+      id="sofra"
+      className="relative px-4 py-24 md:px-8 md:py-32"
+      style={{
+        // the tablecloth the camera landed on: bright at the top, settling into the night as you read
+        backgroundColor: "#120d0b",
+        backgroundImage:
+          "linear-gradient(to bottom, rgba(18,13,11,.6) 0, rgba(18,13,11,.6) 6svh, rgba(18,13,11,.8) 24svh, rgba(18,13,11,.94) 62svh, #15100d 100%), url(/patterns/khayameya.svg)",
+        backgroundSize: "100% 100%, 170px 170px",
+      }}
+    >
       <div className="mx-auto max-w-6xl">
         <Reveal as="header" className="mx-auto max-w-2xl text-center">
           <p className="font-latin text-sm italic tracking-[0.35em] text-amber">THE TABLE</p>

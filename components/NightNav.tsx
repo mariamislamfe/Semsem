@@ -6,9 +6,9 @@ import { toArabicDigits } from "@/lib/format";
 import { useMotionPref } from "./MotionPref";
 
 const links = [
-  { href: "#hekaya", label: "الحكاية" },
   { href: "#sofra", label: "السفرة" },
   { href: "#shay", label: "الشاي" },
+  { href: "#hekaya", label: "الحكاية" },
   { href: "#ihgez", label: "احجز" },
   { href: "#makan", label: "المكان" },
 ];

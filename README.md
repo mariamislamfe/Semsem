@@ -9,23 +9,31 @@ npm run preview  # production build + server: THIS is how to judge smoothness
 npm run build && npm start
 ```
 
-## The idea
+## The idea — one continuous shot
 
-The site is the tent. You arrive outside, in the dark, holding the only lantern — your cursor/finger lights the stitched
-*khayameya* cloth. Scroll and the flaps part, warm light spills out, and you are inside. A "night clock" in the nav runs
-from 11:00 pm to 4:30 am as you scroll; the page ends at dawn with the *musaharati's* drum.
+The site is a single camera move through one night. You stand in a lane hung with
+Ramadan flags; the only light on the closed tent is the lantern you carry (your
+cursor / finger). Scroll and the flaps part, warm light spills into the lane, you
+walk the hall under the khayameya ceiling, and lower yourself onto the table until
+you are looking straight down at the cloth — which is where the menu begins.
 
-| Section | File | What it does |
+| Moment | File | What it does |
 | --- | --- | --- |
-| Entrance | `components/Hero.tsx` | Lantern-lit fabric (pointer / touch / idle drift), scroll-parted flaps |
-| الحكاية | `components/Story.tsx` | Word-by-word light-up statement, doorway-shaped photo frame |
-| **السفرة** (menu) | `components/SofraTable.tsx` | Round table in real CSS 3D perspective; drag / arrows / click-a-plate to rotate; the dish at your seat is lifted and described |
-| Written menu | `components/MenuList.tsx` | Plain, no-motion alternative (toggle in the menu header) |
-| السهرة | `components/Sahra.tsx` | Arch-clipped photo reveals with parallax |
-| المكان | `components/Visit.tsx` | Only shows facts that exist in `site_settings`; otherwise "هنعلنها قريب" |
-| Dawn | `components/Dawn.tsx` | Tap the drum (WebAudio thump) — each beat wakes the next line of the chant |
+| Arrival (3D) | `components/tent/TentCanvas.tsx`, `components/tent/Arrival.tsx` | three.js scene: lane, flags, facade, hall, tables; camera on a Catmull-Rom path driven by scroll; the carried lantern is a real point light |
+| Fallback | `components/Hero.tsx`, `components/Journey.tsx` | the earlier CSS version, used automatically when WebGL is unavailable or the device is very weak |
+| السفرة (menu) | `components/SofraTable.tsx`, `components/MenuSection.tsx` | the menu begins on the same tablecloth the camera landed on; categories are plates, tap one and its range opens |
+| ركن الشاي | `components/TeaCorner.tsx` | kettle on the fire, pick a drink and the glass fills |
+| الحكاية | `components/Story.tsx` | a quiet typographic room |
+| احجز | `components/Reserve.tsx` | party size, and a plan of the tent to choose floor vs table |
+| Dawn | `components/Dawn.tsx` | the musaharati's drum and call |
 
-Scroll-linked motion (flaps, parallax, text lighting up) is always on — it is driven by the visitor's own scrolling. Only motion that plays by itself (idle lantern drift, steam, bunting sway, table spin-in/nudge) follows the OS "reduce motion" setting, and the nav has a toggle to override it.
+**Honesty note:** the 3D tent is a *conceptual interpretation* of a Ramadan tent
+entrance. It is not a reconstruction of the real Semsem venue (no venue references
+were available). Replace its materials/layout once real photographs exist.
+
+Scroll-linked motion (the shot itself) is always on — it is driven by the visitor's
+own scrolling. Motion that plays by itself (idle lantern, steam, flame, sway) follows
+the OS "reduce motion" setting, with a toggle in the nav.
 
 ## Replacing sample content
 
