@@ -9,31 +9,33 @@ npm run preview  # production build + server: THIS is how to judge smoothness
 npm run build && npm start
 ```
 
-## The idea — one continuous shot
+## The idea
 
-The site is a single camera move through one night. You stand in a lane hung with
-Ramadan flags; the only light on the closed tent is the lantern you carry (your
-cursor / finger). Scroll and the flaps part, warm light spills into the lane, you
-walk the hall under the khayameya ceiling, and lower yourself onto the table until
-you are looking straight down at the cloth — which is where the menu begins.
+The venue is black; the only colour in it comes from the fanous and the khayameya
+cloth. The site is built from exactly that.
 
 | Moment | File | What it does |
 | --- | --- | --- |
-| Arrival (3D) | `components/tent/TentCanvas.tsx`, `components/tent/Arrival.tsx` | three.js scene: lane, flags, facade, hall, tables; camera on a Catmull-Rom path driven by scroll; the carried lantern is a real point light |
-| Fallback | `components/Hero.tsx`, `components/Journey.tsx` | the earlier CSS version, used automatically when WebGL is unavailable or the device is very weak |
-| السفرة (menu) | `components/SofraTable.tsx`, `components/MenuSection.tsx` | the menu begins on the same tablecloth the camera landed on; categories are plates, tap one and its range opens |
-| ركن الشاي | `components/TeaCorner.tsx` | kettle on the fire, pick a drink and the glass fills |
-| الحكاية | `components/Story.tsx` | a quiet typographic room |
-| احجز | `components/Reserve.tsx` | party size, and a plan of the tent to choose floor vs table |
+| The fanous | `components/FanousHero.tsx`, `lib/fanousGL.ts` | a real photo of a fanous rendered through a small WebGL shader: the flame flickers, heat shimmers, the light spreads out as it is lit, and your pointer/finger is a second light that reveals the khayameya on the tent wall. Scrolling pushes into the lantern until its red glass becomes the tablecloth |
+| السفرة | `components/Sofra.tsx` | the long Ramadan table: the section pins and a red runner travels right-to-left (Arabic reading direction); every dish is a plate that slides onto the cloth. A thread at the bottom shows progress and jumps between categories |
+| ركن الشاي | `components/TeaCorner.tsx` | khayameya indigo; the kettle pours the drink you pick |
+| القعدة | `components/Story.tsx` | photographs of the Ramadan night and a sentence that lights up word by word |
+| احجز | `components/Reserve.tsx` | party size and a plan of the tent (floor seating vs tables) |
 | Dawn | `components/Dawn.tsx` | the musaharati's drum and call |
 
-**Honesty note:** the 3D tent is a *conceptual interpretation* of a Ramadan tent
-entrance. It is not a reconstruction of the real Semsem venue (no venue references
-were available). Replace its materials/layout once real photographs exist.
+**Motion stack:** GSAP (ScrollTrigger, SplitText, `useGSAP`) with Lenis driven from
+GSAP's ticker, so pinned/scrubbed sections never fight smooth scrolling.
 
-Scroll-linked motion (the shot itself) is always on — it is driven by the visitor's
-own scrolling. Motion that plays by itself (idle lantern, steam, flame, sway) follows
-the OS "reduce motion" setting, with a toggle in the nav.
+**Performance guards:** the shader caps its resolution and pauses off screen; if a
+device can't hold ~30fps in its first seconds it fades itself out and the plain
+photograph stays. Without WebGL the photograph is shown from the first paint.
+Motion that plays by itself follows the OS reduce-motion setting (toggle in the
+footer); with reduced motion the table becomes a plain written menu.
+
+**Fonts:** Aref Ruqaa (display, matches the Ruq'ah logo) and Alexandria (body, by
+Egyptian type designer Mohamed Gaber).
+
+Run `npm run preview` (production build) to judge smoothness; `npm run dev` is much slower.
 
 ## Replacing sample content
 

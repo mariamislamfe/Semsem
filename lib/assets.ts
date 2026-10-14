@@ -38,13 +38,9 @@ export const assets = {
   tea: a("tea", "شاي بيتصب من الإبريق", 1100, 1650),
   coffee: a("coffee", "قهوة", 1100, 1375),
   // atmosphere
-  lantern: a("atmos-lantern", "فانوس مضوي في الضلمة", 1800, 2696),
-  night: a("atmos-night", "ركن دافي مضوي بفانوس", 1800, 1262),
-  tableHands: a("atmos-table", "إيدين بتتشارك أكل على سفرة", 1800, 2700),
-  mezzeHands: a("atmos-mezze-hands", "إيد بتاخد لقمة من مقبلات", 1800, 2250),
-  textile: a("atmos-textile", "فانوس على قماش مزخرف", 1800, 2400),
-  pan: a("atmos-pan", "طبخ في حلّة كبيرة على نار", 1800, 2700),
-  khayameya: a("khayamiya", "قماش خيامية مطرّز بالتطبيق", 1920, 3413),
+  heroFanous: a("hero-fanous", "فانوس رمضان مضوي على ترابيزة في الضلمة", 2200, 2940),
+  khan: a("khan", "قهوة بلدي في خان الخليلي بالليل", 1800, 3200),
+  tentNight: a("tent-night", "أطفال بالفوانيس قدام خيمة رمضان بالليل", 1800, 1200),
 } as const satisfies Record<string, Asset>;
 
 export type AssetKey = keyof typeof assets;

@@ -6,7 +6,6 @@ import type { MenuItem } from "@/lib/types";
 import { formatPrice, toArabicDigits } from "@/lib/format";
 import { useMotionPref } from "./MotionPref";
 import { useOrder } from "./OrderContext";
-import { Reveal } from "./Reveal";
 
 /** Liquid colour per drink — a sensible guess from the name, with a tea default. */
 function liquidFor(item: MenuItem) {
@@ -45,17 +44,16 @@ export function TeaCorner() {
       className="relative overflow-hidden px-5 py-24 md:px-10 md:py-32"
       style={{
         background:
-          "radial-gradient(ellipse 60% 55% at 30% 85%, rgba(217,105,42,.28), transparent 70%), linear-gradient(to bottom, #15100d, #1c0e07 60%, #0b0807)",
+          "radial-gradient(ellipse 55% 50% at 28% 82%, rgba(217,105,42,.32), transparent 70%), #1f2c5c",
       }}
     >
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
         {/* ───── the list ───── */}
         <div>
-          <Reveal as="header">
-            <p className="font-latin text-sm italic tracking-[0.35em] text-amber">TEA CORNER</p>
+          <header>
             <h2 className="mt-4 font-display text-[clamp(3rem,8vw,5.5rem)] leading-[1.1] text-cream">ركن الشاي</h2>
             <p className="mt-4 text-lg leading-8 text-sand">الكنكة على النار من بدري.. اختار كوبايتك وهنصبّها لك.</p>
-          </Reveal>
+          </header>
 
           <ul className="mt-8 space-y-3" role="radiogroup" aria-label="المشروبات">
             {drinks.map((d) => {
@@ -78,8 +76,8 @@ export function TeaCorner() {
                   >
                     <span className="block text-lg font-semibold text-cream">{d.nameAr}</span>
                     <span className="block text-sm text-sand">
-                      {d.nameEn && <span className="font-latin italic">{d.nameEn} · </span>}
-                      {formatPrice(d.price)}
+                      {d.nameEn && <bdi className="me-3 text-sand/70">{d.nameEn}</bdi>}
+                      <bdi>{formatPrice(d.price)}</bdi>
                       {!d.isAvailable && <span className="ms-2 text-cloth">خلصت النهارده</span>}
                     </span>
                   </button>
@@ -117,7 +115,7 @@ export function TeaCorner() {
         </div>
 
         {/* ───── the kettle ───── */}
-        <Reveal delay={0.1}>
+        <div>
           <svg viewBox="0 0 620 420" className="mx-auto w-full max-w-[560px]" role="img" aria-label={`كنكة شاي على النار وكوباية ${selected.nameAr}`}>
             <defs>
               <linearGradient id="copper" x1="0" y1="0" x2="1" y2="1">
@@ -258,7 +256,7 @@ export function TeaCorner() {
           <p className="mt-2 text-center text-sm text-sand">
             {selected.nameAr} <span className="text-amber">— {formatPrice(selected.price)}</span>
           </p>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

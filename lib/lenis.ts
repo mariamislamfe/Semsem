@@ -21,3 +21,8 @@ export function unlockScroll() {
   document.documentElement.style.overflow = "";
   instance?.start();
 }
+
+export function scrollToY(y: number) {
+  if (instance) instance.scrollTo(y, { duration: 1.2 });
+  else window.scrollTo({ top: y, behavior: "smooth" });
+}

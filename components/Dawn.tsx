@@ -179,7 +179,7 @@ export function Dawn({ hasRecording = false }: { hasRecording?: boolean }) {
     <section
       ref={ref}
       aria-labelledby="dawn-title"
-      className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-6 py-28 text-center"
+      className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden px-6 pb-28 pt-40 text-center"
     >
       <motion.div
         aria-hidden
@@ -192,7 +192,6 @@ export function Dawn({ hasRecording = false }: { hasRecording?: boolean }) {
       <div aria-hidden className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
 
       <div className="relative z-10">
-        <p className="font-latin text-sm italic tracking-[0.35em] text-dawn">BEFORE FAJR</p>
         <h2 id="dawn-title" className="mt-4 font-display text-[clamp(2.6rem,8vw,6rem)] leading-[1.15] text-cream">
           {lines.slice(0, lit).map((l, i) => (
             <motion.span

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Amiri, Aref_Ruqaa, Fraunces, IBM_Plex_Sans_Arabic } from "next/font/google";
+import { Alexandria, Aref_Ruqaa } from "next/font/google";
 import { MotionPrefProvider } from "@/components/MotionPref";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import "./globals.css";
@@ -11,25 +11,11 @@ const ruqaa = Aref_Ruqaa({
   display: "swap",
 });
 
-const plex = IBM_Plex_Sans_Arabic({
+// Alexandria — an Arabic/Latin family by Egyptian type designer Mohamed Gaber.
+const alexandria = Alexandria({
   subsets: ["arabic", "latin"],
-  weight: ["300", "400", "500", "600"],
-  variable: "--font-plex",
-  display: "swap",
-});
-
-const amiri = Amiri({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "700"],
-  style: ["normal", "italic"],
-  variable: "--font-amiri",
-  display: "swap",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  style: ["normal", "italic"],
-  variable: "--font-fraunces",
+  weight: "variable",
+  variable: "--font-alexandria",
   display: "swap",
 });
 
@@ -56,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="ar"
       dir="rtl"
-      className={`${ruqaa.variable} ${plex.variable} ${fraunces.variable} ${amiri.variable}`}
+      className={`${ruqaa.variable} ${alexandria.variable}`}
     >
       <body>
         <MotionPrefProvider>

@@ -1,28 +1,30 @@
 "use client";
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { useEffect } from "react";
 import { setLenis } from "@/lib/lenis";
 import { useMotionPref } from "./MotionPref";
 
+gsap.registerPlugin(ScrollTrigger);
+
 /**
- * Inertial scrolling: wheel notches become one continuous glide, which is what
- * makes scroll-linked scenes (the tent flaps, parallax) read as smooth.
- * Off only if the visitor switched motion off in the nav.
+ * One clock for scrolling and animation: Lenis glides the wheel, and GSAP's
+ * ticker drives Lenis, so pinned/scrubbed ScrollTriggers never fight the
+ * smooth scroll. Off only if the visitor switched motion off.
  */
 export function SmoothScroll() {
   const { userOff } = useMotionPref();
 
   useEffect(() => {
     if (userOff) return;
-    const lenis = new Lenis({ lerp: 0.09, smoothWheel: true, wheelMultiplier: 1 });
+    const lenis = new Lenis({ lerp: 0.085, smoothWheel: true });
     setLenis(lenis);
-    let raf = 0;
-    const loop = (t: number) => {
-      lenis.raf(t);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
+    lenis.on("scroll", ScrollTrigger.update);
+    const tick = (time: number) => lenis.raf(time * 1000);
+    gsap.ticker.add(tick);
+    gsap.ticker.lagSmoothing(0);
 
     const onClick = (e: MouseEvent) => {
       const a = (e.target as Element | null)?.closest?.('a[href^="#"]');
@@ -37,7 +39,7 @@ export function SmoothScroll() {
 
     return () => {
       document.removeEventListener("click", onClick);
-      cancelAnimationFrame(raf);
+      gsap.ticker.remove(tick);
       lenis.destroy();
       setLenis(null);
     };

@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { Dawn } from "@/components/Dawn";
 import { Footer } from "@/components/Footer";
-import { Arrival } from "@/components/tent/Arrival";
+import { FanousHero } from "@/components/FanousHero";
 import { MenuSection } from "@/components/MenuSection";
 import { NightNav } from "@/components/NightNav";
 import { Reserve } from "@/components/Reserve";
@@ -22,11 +22,15 @@ export default async function Home() {
   // a real recording of the chant, if the owner dropped one in /public/audio
   const hasRecording = existsSync(path.join(process.cwd(), "public", "audio", "asha-ya-nayem.mp3"));
 
+  // only facts we actually know — no address, hours or prices until the owner confirms them
+  const jsonLd = { "@context": "https://schema.org", "@type": "Restaurant", name: "سمسم — Semsem", servesCuisine: "Egyptian", description: "خيمة سحور رمضانية" };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <NightNav />
       <main id="top">
-        <Arrival />
+        <FanousHero />
         <MenuSection categories={menu.categories} isSample={isSample} />
         <Story />
         <Reserve />

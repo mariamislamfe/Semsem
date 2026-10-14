@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { createReservation, type ActionResult } from "@/app/actions";
 import { toArabicDigits } from "@/lib/format";
-import { Reveal } from "./Reveal";
 
 type Seating = "table" | "floor" | "any";
 
@@ -44,20 +43,20 @@ export function Reserve() {
     "w-full rounded-xl border border-cream/20 bg-ink/60 px-4 py-3 text-cream placeholder:text-sand/60";
 
   return (
-    <section id="ihgez" className="bg-gradient-to-b from-ink to-soot px-5 py-20 md:px-10 md:py-28">
-      <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[1fr_1.3fr]">
-        <Reveal as="header">
-          <p className="font-latin text-sm italic tracking-[0.35em] text-amber">RESERVE</p>
+    <section id="ihgez" className="relative bg-cloth px-5 py-20 md:px-10 md:py-28">
+      <div aria-hidden className="khayameya pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-multiply" style={{ backgroundSize: "150px 150px" }} />
+      <div className="relative mx-auto grid max-w-5xl gap-12 md:grid-cols-[1fr_1.3fr]">
+        <header>
           <h2 className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">احجز مكانك</h2>
-          <p className="mt-4 leading-8 text-sand">
+          <p className="mt-4 leading-8 text-cream/90">
             قولنا هتبقوا كام فرد، وعايزين تقعدوا على ترابيزة ولا على الأرض، والباقي علينا.
           </p>
-          <p className="mt-4 text-sm leading-7 text-sand/70">
+          <p className="mt-4 text-sm leading-7 text-cream/75">
             ده طلب حجز مش تأكيد — هنكلّمك على الرقم لما يتأكّد.
           </p>
-        </Reveal>
+        </header>
 
-        <Reveal delay={0.1}>
+        <div>
           {result?.ok ? (
             <div className="rounded-2xl border border-amber/40 bg-amber/5 p-8 text-center">
               <p className="font-display text-5xl text-amber">وصلنا طلبك</p>
@@ -197,7 +196,7 @@ export function Reserve() {
               </button>
             </form>
           )}
-        </Reveal>
+        </div>
       </div>
     </section>
   );

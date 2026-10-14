@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
 /* ───────── Semsem design tokens ─────────
-   Palette is drawn from three things: the black tent, the warm light
-   that spills out of it, and the red/mustard/olive of Egyptian
-   khayameya (appliqué tent cloth). */
+   The venue is black; the only colour in it is what the khayameya cloth
+   and the fanous bring. So: true black, tent red, mustard thread, cream
+   cloth, khayameya indigo — nothing else. */
 @theme {
-  --color-ink: #0b0807;
-  --color-soot: #15100d;
-  --color-char: #211812;
-  --color-cloth: #9b2a1c;
+  --color-ink: #000000;          /* the tent at night */
+  --color-soot: #0f0a08;         /* a raised surface in the dark */
+  --color-char: #1c1310;
+  --color-cloth: #b3261e;        /* khayameya red — the tablecloth */
+  --color-cloth-deep: #7d1812;
   --color-ember: #d9692a;
-  --color-amber: #f2a93b;
-  --color-cream: #f3e6cc;
-  --color-sand: #cdbb97;
-  --color-olive: #6b7a3e;
+  --color-amber: #e4a72e;        /* mustard thread: prices, actions */
+  --color-cream: #f3e3c3;        /* cloth cream: text */
+  --color-sand: #cbb48f;
+  --color-olive: #5b6b2a;
   --color-sprout: #a4b862;
+  --color-indigo: #1f2c5c;       /* khayameya blue: the tea corner, the dawn */
   --color-dawn: #b9c6d6;
 
   --font-display: var(--font-ruqaa), "Aref Ruqaa", serif;
-  --font-body: var(--font-plex), system-ui, sans-serif;
-  --font-latin: var(--font-fraunces), Georgia, serif;
-  --font-poetic: var(--font-amiri), "Amiri", serif;
+  --font-body: var(--font-alexandria), system-ui, sans-serif;
+  --font-latin: var(--font-alexandria), system-ui, sans-serif;
+  --font-poetic: var(--font-ruqaa), "Aref Ruqaa", serif;
 }
 
 html {
