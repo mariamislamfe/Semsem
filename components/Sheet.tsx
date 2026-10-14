@@ -58,7 +58,7 @@ export function Sheet({
           >
             <div className="flex items-start justify-between gap-4 border-b border-cream/10 px-6 pb-4 pt-5">
               <div>
-                {eyebrow && <p className="font-latin text-xs italic tracking-[0.3em] text-amber">{eyebrow}</p>}
+                {eyebrow && <p className="text-sm text-amber">{eyebrow}</p>}
                 <h3 className="font-display text-4xl leading-tight text-cream">{title}</h3>
               </div>
               <button

@@ -1,9 +1,14 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import type { MotionValue } from "framer-motion";
+import Image from "next/image";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { SplitText } from "gsap/SplitText";
+import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
-import { Reveal } from "./Reveal";
+import { assets } from "@/lib/assets";
+
+gsap.registerPlugin(ScrollTrigger, SplitText, useGSAP);
 
 const statement =
   "لمّا الدنيا تهدى بره، النور بيطلع من جوّه الخيمة. الترابيزة بتتملي قبل ما تقعد، والشاي على النار، والضحك والحكاوي في كل مكان. هنا السحور مش وجبة.. ده معاد.";
@@ -14,44 +19,72 @@ const moments = [
   { t: "سهرة لحد الفجر", d: "ولسه الليلة بدري." },
 ];
 
-function Word({ word, i, total, p }: { word: string; i: number; total: number; p: MotionValue<number> }) {
-  const opacity = useTransform(p, [i / total, (i + 1) / total], [0.12, 1]);
-  return (
-    <motion.span style={{ opacity }} className="inline-block ps-[0.28em]">
-      {word}
-    </motion.span>
-  );
-}
-
 /**
- * A quiet room after the table and the tea: no image, no card — only the
- * sentence, lit word by word as you read it.
+ * القعدة — the place, after the food. Two photographs of the Ramadan night,
+ * and one sentence that lights up word by word at reading pace.
  */
 export function Story() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.85", "end 0.5"] });
-  const words = statement.split(" ");
+  const root = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const el = root.current;
+      if (!el) return;
+      // words only — splitting Arabic into letters would break their joins
+      const split = SplitText.create(el.querySelector("[data-read]"), { type: "words" });
+      gsap.fromTo(
+        split.words,
+        { opacity: 0.12 },
+        {
+          opacity: 1,
+          ease: "none",
+          stagger: 0.1,
+          scrollTrigger: { trigger: el.querySelector("[data-read]"), start: "top 80%", end: "bottom 45%", scrub: true },
+        },
+      );
+      gsap.utils.toArray<HTMLElement>("[data-drift]", el).forEach((img, i) => {
+        gsap.fromTo(
+          img,
+          { yPercent: i ? 10 : -6 },
+          { yPercent: i ? -10 : 6, ease: "none", scrollTrigger: { trigger: img.parentElement, start: "top bottom", end: "bottom top", scrub: true } },
+        );
+      });
+    },
+    { scope: root },
+  );
 
   return (
-    <section id="hekaya" className="relative bg-ink px-6 py-32 md:px-10 md:py-48">
-      <div ref={ref} className="mx-auto max-w-4xl text-center">
-        <p className="font-latin text-sm italic tracking-[0.35em] text-amber">SEMSEM</p>
-        <h2 className="mt-4 font-display text-[clamp(4.5rem,13vw,9rem)] leading-[1] text-cream">سمسم</h2>
-        <p className="mt-20 font-poetic text-[clamp(1.6rem,3.6vw,2.8rem)] leading-[1.95] text-cream">
-          {words.map((w, i) => (
-            <Word key={i} word={w} i={i} total={words.length} p={scrollYProgress} />
-          ))}
-        </p>
+    <section ref={root} id="hekaya" className="relative bg-ink px-5 py-28 md:px-[6vw] md:py-40">
+      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="lg:col-span-6 lg:col-start-1 lg:pt-16">
+          <h2 className="font-display text-[clamp(3.6rem,9vw,7.5rem)] leading-none text-cream">القعدة</h2>
+          <p data-read className="mt-10 text-[clamp(1.45rem,2.6vw,2.2rem)] font-light leading-[1.9] text-cream">
+            {statement}
+          </p>
+        </div>
+
+        <figure className="relative aspect-[3/4.3] overflow-hidden rounded-[2px] lg:col-span-5 lg:col-start-8">
+          <div data-drift className="absolute -inset-y-[10%] inset-x-0">
+            <Image src={assets.khan.src} alt={assets.khan.alt} fill sizes="(min-width:1024px) 40vw, 92vw" className="object-cover" />
+          </div>
+        </figure>
+
+        <figure className="relative aspect-[3/2] overflow-hidden rounded-[2px] lg:col-span-6 lg:col-start-1">
+          <div data-drift className="absolute -inset-y-[12%] inset-x-0">
+            <Image src={assets.tentNight.src} alt={assets.tentNight.alt} fill sizes="(min-width:1024px) 55vw, 92vw" className="object-cover" />
+          </div>
+        </figure>
       </div>
 
-      <ul className="mx-auto mt-24 grid max-w-5xl gap-10 md:grid-cols-3">
-        {moments.map((m, i) => (
-          <Reveal as="li" key={m.t} delay={i * 0.12} className="border-t border-cream/15 pt-5 text-center">
+      <ul className="mx-auto mt-24 grid max-w-6xl gap-10 md:grid-cols-3">
+        {moments.map((m) => (
+          <li key={m.t} className="border-t border-cream/20 pt-5">
             <h3 className="font-display text-3xl text-amber">{m.t}</h3>
             <p className="mt-2 leading-8 text-sand">{m.d}</p>
-          </Reveal>
+          </li>
         ))}
       </ul>
+      <p className="mx-auto mt-14 max-w-6xl text-xs text-sand/60">الصور توضيحية من مصادر مفتوحة، ومش من خيمة سمسم.</p>
     </section>
   );
 }

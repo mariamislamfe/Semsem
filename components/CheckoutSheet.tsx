@@ -44,7 +44,6 @@ export function CheckoutSheet({ open, onClose }: { open: boolean; onClose: () =>
       open={open}
       onClose={close}
       title={result?.ok ? "وصل طلبك" : "طلبك"}
-      eyebrow="YOUR ORDER"
       footer={
         result?.ok ? (
           <button

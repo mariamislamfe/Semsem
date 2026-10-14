@@ -1,5 +1,4 @@
 import type { SiteSettings } from "@/lib/types";
-import { Reveal } from "./Reveal";
 
 /**
  * Practical information. Every fact here comes from `site_settings`.
@@ -23,13 +22,12 @@ export function Visit({ settings }: { settings: SiteSettings }) {
   return (
     <section id="makan" className="relative bg-soot px-5 py-24 md:px-10 md:py-32">
       <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[1fr_1.4fr]">
-        <Reveal as="header">
-          <p className="font-latin text-sm italic tracking-[0.35em] text-amber">FIND US</p>
+        <header>
           <h2 className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">المكان والمعاد</h2>
           <p className="mt-4 leading-8 text-sand">
             التفاصيل دي بتتحدّث من لوحة التحكم أول ما تتأكّد — مفيش حاجة هنا مخترَعة.
           </p>
-        </Reveal>
+        </header>
 
         <dl className="divide-y divide-cream/10 rounded-2xl border border-cream/10">
           {rows.map((r) => (

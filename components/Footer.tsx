@@ -1,10 +1,12 @@
+import { MotionToggle } from "./MotionToggle";
+
 export function Footer() {
   return (
     <footer className="bg-ink px-5 py-12 text-sm text-sand md:px-10">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="font-display text-4xl text-cream">سمسم</p>
-          <p className="mt-1 font-latin text-xs italic tracking-[0.4em] text-amber">SEMSEM</p>
+          <p className="mt-1 text-sm text-amber">Semsem</p>
         </div>
 
         <div className="max-w-xl space-y-3 leading-7">
@@ -19,13 +21,16 @@ export function Footer() {
               <a className="underline hover:text-amber" href="https://www.pexels.com/license/" target="_blank" rel="noopener noreferrer">
                 Pexels
               </a>{" "}
-              (ترخيص مجاني)، وصورة «الفول» (CC0) وقماش الخيامية (CC BY-SA 4.0) من{" "}
+              (ترخيص مجاني)، وصورة «الفول» (CC0) من{" "}
               <a className="underline hover:text-amber" href="https://commons.wikimedia.org" target="_blank" rel="noopener noreferrer">
                 Wikimedia Commons
               </a>
               . كلها توضيحية، والتفاصيل في الملف <code dir="ltr">public/images/CREDITS.md</code>.
             </p>
           </details>
+          <p>
+            <MotionToggle />
+          </p>
         </div>
       </div>
     </footer>

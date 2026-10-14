@@ -30,7 +30,7 @@ export function ItemRow({ item, note, compact = false }: { item: MenuItem; note?
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline gap-x-3">
           <h4 className={`font-semibold text-cream ${compact ? "text-base" : "text-lg"}`}>{item.nameAr}</h4>
-          {item.nameEn && <span className="font-latin text-sm italic text-sand/80">{item.nameEn}</span>}
+          {item.nameEn && <span className="text-sm text-sand/70">{item.nameEn}</span>}
         </div>
         {note && <p className="mt-0.5 text-sm text-amber">{note}</p>}
         {item.descriptionAr && (

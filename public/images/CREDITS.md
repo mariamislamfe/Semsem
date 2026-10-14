@@ -22,15 +22,11 @@ Photographer credits are on each photo page: `https://www.pexels.com/photo/<id>/
 | tea.webp | 1618904 |
 | mint-tea.webp | 17138078 |
 | coffee.webp | 25856507 |
-| atmos-lantern.webp | 20689021 |
-| atmos-table.webp | 20475940 |
-| atmos-night.webp | 1073273 |
-| atmos-textile.webp | 15820169 |
-| atmos-pan.webp | 19228024 |
-| atmos-mezze-hands.webp | 29253325 |
+| hero-fanous.webp | 15834406 |
+| khan.webp | 17721305 |
+| tent-night.webp | 11703451 |
 
 ## Wikimedia Commons
 | file | Commons file | License |
 | --- | --- | --- |
 | ful.webp | File:Ful Medames.JPG | CC0 |
-| khayamiya.webp | File:Khayamiya-6.jpg | CC BY-SA 4.0 (attribution: see file page) |
