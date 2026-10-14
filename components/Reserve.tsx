@@ -103,8 +103,9 @@ export function Reserve() {
               </fieldset>
 
               <fieldset>
-                <legend className="mb-3 text-sm text-sand">تحبوا تقعدوا فين؟</legend>
-                <div className="grid grid-cols-3 gap-3">
+                <legend className="mb-3 text-sm text-sand">تحبوا تقعدوا فين؟ اختاروا من الخريطة</legend>
+                <TentPlan seating={seating} onPick={setSeating} />
+                <div className="mt-3 grid grid-cols-3 gap-3">
                   {seatOptions.map((o) => (
                     <label
                       key={o.v}
@@ -199,5 +200,81 @@ export function Reserve() {
         </Reveal>
       </div>
     </section>
+  );
+}
+
+/**
+ * Top-down sketch of the tent: pick the side you want to sit on. Conceptual —
+ * the real layout will replace this once the venue plan is confirmed.
+ */
+function TentPlan({ seating, onPick }: { seating: Seating; onPick: (s: Seating) => void }) {
+  const zone = (id: Seating, label: string, x: number, w: number, children: React.ReactNode) => {
+    const on = seating === id;
+    return (
+      <g
+        role="radio"
+        aria-checked={on}
+        aria-label={label}
+        tabIndex={0}
+        className="cursor-pointer outline-none"
+        onClick={() => onPick(id)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onPick(id);
+          }
+        }}
+      >
+        <rect
+          x={x}
+          y="14"
+          width={w}
+          height="132"
+          rx="10"
+          fill={on ? "rgba(242,169,59,.14)" : "rgba(243,230,204,.03)"}
+          stroke={on ? "#f2a93b" : "rgba(243,230,204,.25)"}
+          strokeWidth={on ? 2 : 1}
+          strokeDasharray={on ? undefined : "4 4"}
+        />
+        {children}
+        <text x={x + w / 2} y="136" textAnchor="middle" fontSize="11" fill={on ? "#f2a93b" : "#cdbb97"}>
+          {label}
+        </text>
+      </g>
+    );
+  };
+  return (
+    <svg viewBox="0 0 300 176" className="w-full" role="radiogroup" aria-label="خريطة الخيمة">
+      <rect x="2" y="2" width="296" height="150" rx="14" fill="#15100d" stroke="#8f2518" strokeWidth="2" />
+      {zone(
+        "table",
+        "ترابيزات",
+        12,
+        134,
+        <>
+          {[0, 1, 2, 3].map((i) => (
+            <circle key={i} cx={44 + (i % 2) * 58} cy={46 + Math.floor(i / 2) * 50} r="17" fill="#2a0f0a" stroke="#c9792b" strokeWidth="1.5" />
+          ))}
+        </>,
+      )}
+      {zone(
+        "floor",
+        "جلسة أرضية",
+        154,
+        134,
+        <>
+          <rect x="172" y="30" width="98" height="78" rx="6" fill="#2a0f0a" stroke="#6b7a3e" strokeWidth="1.5" strokeDasharray="3 3" />
+          <circle cx="221" cy="69" r="14" fill="#3a1a10" stroke="#c9792b" />
+          {[[184, 40], [246, 40], [184, 92], [246, 92]].map(([x, y]) => (
+            <rect key={`${x}-${y}`} x={x! - 7} y={y! - 5} width="14" height="10" rx="2" fill="#9b2a1c" />
+          ))}
+        </>,
+      )}
+      {/* the door, at the bottom */}
+      <rect x="132" y="146" width="36" height="8" fill="#15100d" />
+      <text x="150" y="170" textAnchor="middle" fontSize="10" fill="#cdbb97">
+        الباب
+      </text>
+    </svg>
   );
 }
