@@ -16,7 +16,7 @@ cloth. The site is built from exactly that.
 
 | Moment | File | What it does |
 | --- | --- | --- |
-| The door | `components/CurtainHero.tsx` | two khayameya curtains cut into strips that fold like real pleats (CSS 3D accordion). The name is printed on the cloth, so it folds and splits with it; the curtain breathes, ripples under your pointer/finger, and gathers to the sides as you scroll to reveal the lit fanous inside |
+| The door | `components/CurtainHero.tsx`, `lib/curtainGL.ts` | a velvet curtain rendered as real cloth in a WebGL shader: folds lit like velvet, a pelmet with gold fringe, the name سمسم and the embroidery folding with the fabric. It breathes, ripples under the pointer/finger, and gathers to the sides on scroll to reveal the welcome in warm light. Falls back to CSS 3D strips without WebGL or on slow devices |
 | الصينية (menu) | `components/Sofra.tsx` | categories on top; the chosen one arrives on an arc-shaped copper tray, dishes sliding along the curve. Swipe/drag or arrows to turn it; the last stop asks «عايز حاجة تانية؟» |
 | قول للقهوجي | `components/TeaCorner.tsx` | build your tea the Egyptian way (كشري/فتلة, light/strong, sugar spoons, mint): the glass changes live and the order phrase writes itself; it is added to the order with that note |
 | القعدة | `components/Story.tsx` | a photograph of the Ramadan night and a sentence that lights up word by word |
