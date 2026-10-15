@@ -6,6 +6,7 @@ import { CurtainHero } from "@/components/CurtainHero";
 import { MenuSection } from "@/components/MenuSection";
 import { NightNav } from "@/components/NightNav";
 import { Reserve } from "@/components/Reserve";
+import { ScrollFX, Stitch } from "@/components/ScrollFX";
 import { Story } from "@/components/Story";
 import { Visit } from "@/components/Visit";
 import { getMenu } from "@/lib/data/menu";
@@ -32,12 +33,16 @@ export default async function Home() {
       <main id="top">
         <CurtainHero />
         <MenuSection categories={menu.categories} isSample={isSample} />
+        <Stitch className="bg-[#110a06]" />
         <Story />
+        <Stitch className="bg-ink" tone="#b3261e" />
         <Reserve />
+        <Stitch className="bg-soot" />
         <Visit settings={settings} />
         <Dawn hasRecording={hasRecording} />
       </main>
       <Footer />
+      <ScrollFX />
     </>
   );
 }

@@ -57,7 +57,7 @@ export function Story() {
     <section ref={root} id="hekaya" className="relative bg-ink px-5 py-28 md:px-[6vw] md:py-40">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-6 lg:col-start-1 lg:pt-16">
-          <h2 className="font-display text-[clamp(3.6rem,9vw,7.5rem)] leading-none text-cream">القعدة</h2>
+          <h2 data-anim="heading" className="font-display text-[clamp(3.6rem,9vw,7.5rem)] leading-none text-cream">القعدة</h2>
           <p data-read className="mt-10 text-[clamp(1.45rem,2.6vw,2.2rem)] font-light leading-[1.9] text-cream">
             {statement}
           </p>
@@ -71,7 +71,7 @@ export function Story() {
 
       </div>
 
-      <ul className="mx-auto mt-24 grid max-w-6xl gap-10 md:grid-cols-3">
+      <ul data-anim="stagger" className="mx-auto mt-24 grid max-w-6xl gap-10 md:grid-cols-3">
         {moments.map((m) => (
           <li key={m.t} className="border-t border-cream/20 pt-5">
             <h3 className="font-display text-3xl text-amber">{m.t}</h3>
