@@ -1,6 +1,6 @@
 "use client";
 
-import { useMotionValueEvent, useScroll } from "framer-motion";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useState } from "react";
 import { toArabicDigits } from "@/lib/format";
 
@@ -20,15 +20,26 @@ function nightClock(progress: number) {
 }
 
 export function NightNav() {
-  const { scrollYProgress } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
   const [time, setTime] = useState(() => nightClock(0));
+  const [hidden, setHidden] = useState(false);
+  // out of the way while you read down the page, back the moment you scroll up
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    const next = y > 240 && y > prev + 2 ? true : y < prev - 2 || y < 240 ? false : null;
+    if (next !== null) setHidden((h) => (h === next ? h : next));
+  });
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     const next = nightClock(Math.min(1, Math.max(0, v)));
     setTime((prev) => (prev === next ? prev : next));
   });
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 w-full max-w-[100vw] bg-gradient-to-b from-black/45 to-transparent">
+    <motion.header
+      className="pointer-events-none fixed inset-x-0 top-0 z-50 w-full max-w-[100vw] bg-gradient-to-b from-black/45 to-transparent"
+      animate={{ y: hidden ? "-110%" : "0%" }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="pointer-events-auto mx-auto flex max-w-[1500px] items-center justify-between gap-6 px-5 py-4 md:px-10">
         <a href="#top" className="font-display text-3xl leading-none text-cream" aria-label="سمسم، أول الصفحة">
           سمسم
@@ -49,6 +60,6 @@ export function NightNav() {
           </a>
         </div>
       </div>
-    </header>
+    </motion.header>
   );
 }

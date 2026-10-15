@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { CategoryWithItems, MenuItem } from "@/lib/types";
@@ -11,7 +12,7 @@ import { MenuList } from "./MenuList";
 import { useMotionPref } from "./MotionPref";
 import { Sheet } from "./Sheet";
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 /**
  * الصينية — the menu as a curved copper tray on the red tablecloth.
@@ -112,14 +113,34 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
     [reduced, render],
   );
 
-  // a category arrives: the tray turns and its dishes slide along the arc into place
+  // a category arrives: the tray turns and its dishes slide along the arc into place.
+  // The very first arrival waits until the tray is actually on screen.
+  const seen = useRef(false);
   useGSAP(
     () => {
       if (!geo) return;
       const { lo } = limits();
-      turn.current.c = reduced ? lo : lo + 3.2;
+      if (reduced) {
+        turn.current.c = lo;
+        render();
+        return;
+      }
+      turn.current.c = lo + 3.2;
       render();
-      turnTo(lo, 1.25, "expo.out");
+      if (seen.current) {
+        turnTo(lo, 1.25, "expo.out");
+        return;
+      }
+      const st = ScrollTrigger.create({
+        trigger: stage.current,
+        start: "top 70%",
+        once: true,
+        onEnter: () => {
+          seen.current = true;
+          turnTo(lo, 1.6, "expo.out");
+        },
+      });
+      return () => st.kill();
     },
     { dependencies: [slug, geo] },
   );
@@ -181,10 +202,10 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_55%,transparent_30%,rgba(50,6,3,.6)_100%)]" />
 
       <div className="relative mx-auto max-w-6xl px-5 text-center">
-        <h2 className="font-display text-[clamp(3.2rem,8vw,6.5rem)] leading-none text-cream">الصينية</h2>
-        <p className="mx-auto mt-3 max-w-[40ch] text-cream/85">اختار من فوق، والصينية هتلف وتجيبلك أنواعه.</p>
+        <h2 data-anim="heading" className="font-display text-[clamp(3.2rem,8vw,6.5rem)] leading-none text-cream">الصينية</h2>
+        <p data-anim="fade" className="mx-auto mt-3 max-w-[40ch] text-cream/85">اختار من فوق، والصينية هتلف وتجيبلك أنواعه.</p>
 
-        <div role="tablist" aria-label="أقسام المنيو" className="no-scrollbar mt-8 flex gap-x-7 gap-y-2 overflow-x-auto px-1 pb-2 sm:flex-wrap sm:justify-center md:gap-x-12">
+        <div data-anim="stagger" role="tablist" aria-label="أقسام المنيو" className="no-scrollbar mt-8 flex gap-x-7 gap-y-2 overflow-x-auto px-1 pb-2 sm:flex-wrap sm:justify-center md:gap-x-12">
           {categories.map((c) => {
             const on = c.slug === current.slug;
             return (

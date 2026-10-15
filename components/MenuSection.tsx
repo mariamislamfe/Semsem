@@ -7,6 +7,7 @@ import { formatPrice, toArabicDigits } from "@/lib/format";
 import { CheckoutSheet } from "./CheckoutSheet";
 import { OrderProvider, useOrder } from "./OrderContext";
 import { Sofra } from "./Sofra";
+import { Stitch } from "./ScrollFX";
 import { TeaCorner } from "./TeaCorner";
 
 interface Props {
@@ -26,6 +27,7 @@ export function MenuSection({ categories, isSample }: Props) {
   return (
     <OrderProvider categories={categories}>
       <Sofra categories={categories.filter((c) => c.slug !== "drinks")} all={categories} isSample={isSample} />
+      <Stitch className="bg-[#110a06]" tone="#e4a72e" />
       <TeaCorner />
       <CartBar onCheckout={() => setCheckout(true)} hidden={checkout} />
       <CheckoutSheet open={checkout} onClose={() => setCheckout(false)} />

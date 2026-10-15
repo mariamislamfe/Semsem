@@ -47,8 +47,8 @@ export function Reserve() {
       <div aria-hidden className="khayameya pointer-events-none absolute inset-0 opacity-[0.12]" style={{ backgroundSize: "150px 150px" }} />
       <div className="relative mx-auto max-w-6xl">
         <header className="flex flex-wrap items-end justify-between gap-x-12 gap-y-3">
-          <h2 className="font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">احجز مكانك</h2>
-          <div className="max-w-md">
+          <h2 data-anim="heading" className="font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">احجز مكانك</h2>
+          <div data-anim="fade" className="max-w-md">
           <p className="leading-8 text-cream/90">
             قولنا هتبقوا كام فرد، وعايزين تقعدوا على ترابيزة ولا على الأرض، والباقي علينا.
           </p>
@@ -58,7 +58,7 @@ export function Reserve() {
           </div>
         </header>
 
-        <div className="mt-10">
+        <div data-anim="fade" className="mt-10">
           {result?.ok ? (
             <div className="mx-auto max-w-2xl rounded-2xl border border-amber/40 bg-soot p-8 text-center">
               <p className="font-display text-5xl text-amber">وصلنا طلبك</p>

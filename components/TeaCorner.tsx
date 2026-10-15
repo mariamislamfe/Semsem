@@ -72,12 +72,12 @@ export function TeaCorner() {
     >
       <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
         <div>
-          <h2 className="font-display text-[clamp(3rem,8vw,5.5rem)] leading-[1.05] text-cream">صينية الشاي</h2>
-          <p className="mt-3 max-w-[40ch] text-lg leading-8 text-sand">
+          <h2 data-anim="heading" className="font-display text-[clamp(3rem,8vw,5.5rem)] leading-[1.05] text-cream">صينية الشاي</h2>
+          <p data-anim="fade" className="mt-3 max-w-[40ch] text-lg leading-8 text-sand">
             القعدة كام واحد؟ كل واحد يختار كوبايته، والصينية تيجي لحد عندكم.
           </p>
 
-          <ul className="mt-6 divide-y divide-cream/10 border-y border-cream/10 lg:mt-8">
+          <ul data-anim="stagger" className="mt-6 divide-y divide-cream/10 border-y border-cream/10 lg:mt-8">
             {drinks.map((d) => {
               const q = tray[d.id] ?? 0;
               return (
@@ -127,7 +127,7 @@ export function TeaCorner() {
         </div>
 
         {/* the tray, from above */}
-        <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="order-first mx-auto w-full max-w-[270px] sm:max-w-[400px] lg:order-none lg:max-w-[540px]" role="img" aria-label={total ? `صينية عليها ${summary}` : "صينية شاي فاضية"}>
+        <svg data-anim="spin" viewBox={`0 0 ${SIZE} ${SIZE}`} className="order-first mx-auto w-full max-w-[270px] sm:max-w-[400px] lg:order-none lg:max-w-[540px]" role="img" aria-label={total ? `صينية عليها ${summary}` : "صينية شاي فاضية"}>
           <defs>
             <radialGradient id="brass-top" cx=".42" cy=".38" r=".75">
               <stop offset="0" stopColor="#f3cd8a" />

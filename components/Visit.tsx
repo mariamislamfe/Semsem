@@ -23,13 +23,13 @@ export function Visit({ settings }: { settings: SiteSettings }) {
     <section id="makan" className="relative bg-soot px-5 py-24 md:px-10 md:py-32">
       <div className="mx-auto grid max-w-5xl gap-12 md:grid-cols-[1fr_1.4fr]">
         <header>
-          <h2 className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">المكان والمعاد</h2>
-          <p className="mt-4 leading-8 text-sand">
+          <h2 data-anim="heading" className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">المكان والمعاد</h2>
+          <p data-anim="fade" className="mt-4 leading-8 text-sand">
             التفاصيل دي بتتحدّث من لوحة التحكم أول ما تتأكّد — مفيش حاجة هنا مخترَعة.
           </p>
         </header>
 
-        <dl className="divide-y divide-cream/10 rounded-2xl border border-cream/10">
+        <dl data-anim="stagger" className="divide-y divide-cream/10 rounded-2xl border border-cream/10">
           {rows.map((r) => (
             <div key={r.label} className="flex flex-wrap items-center justify-between gap-3 px-6 py-5">
               <dt className="text-sand">{r.label}</dt>
