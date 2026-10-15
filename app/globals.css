@@ -93,6 +93,12 @@ body {
   50% { transform: translate(3px, 3px) rotate(4deg); }
 }
 
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  40% { opacity: .35; }
+  55% { opacity: .9; }
+}
+
 @keyframes sway {
   from { transform: rotate(-3.5deg); }
   to { transform: rotate(3.5deg); }
@@ -127,6 +133,9 @@ body {
 .leaf-bob {
   animation: leaf 3.6s ease-in-out infinite;
 }
+.twinkle {
+  animation: twinkle 2.6s ease-in-out infinite;
+}
 .bubble {
   animation: bubble 2.4s ease-in infinite;
 }
@@ -140,6 +149,7 @@ body {
 :root[data-motion="reduced"] .flicker,
 :root[data-motion="reduced"] .flame,
 :root[data-motion="reduced"] .bubble,
+:root[data-motion="reduced"] .twinkle,
 :root[data-motion="reduced"] .leaf-bob,
 :root[data-motion="reduced"] .sway {
   animation: none;
