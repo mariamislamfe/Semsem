@@ -8,7 +8,7 @@ import { Sheet } from "./Sheet";
 import { useOrder } from "./OrderContext";
 
 export function CheckoutSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { categories, cart, lines, total, priced, count, add, remove, clear } = useOrder();
+  const { categories, cart, lines, total, priced, count, add, remove, clear, notes, removeNote } = useOrder();
   const [seating, setSeating] = useState<"table" | "floor">("table");
   const [tableLabel, setTableLabel] = useState("");
   const [name, setName] = useState("");
@@ -34,7 +34,7 @@ export function CheckoutSheet({ open, onClose }: { open: boolean; onClose: () =>
         seating,
         tableLabel,
         name,
-        note,
+        note: [...notes, note].filter(Boolean).join(" — "),
       });
       setResult(res);
     });
@@ -102,6 +102,19 @@ export function CheckoutSheet({ open, onClose }: { open: boolean; onClose: () =>
                       +
                     </button>
                   </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {notes.length > 0 && (
+            <ul className="space-y-2">
+              {notes.map((n, i) => (
+                <li key={`${n}-${i}`} className="flex items-center justify-between gap-3 rounded-xl bg-cream/5 px-4 py-2 text-sm text-cream">
+                  <span>{n}</span>
+                  <button type="button" onClick={() => removeNote(i)} className="text-sand hover:text-amber" aria-label={`شيل الملاحظة: ${n}`}>
+                    شيل
+                  </button>
                 </li>
               ))}
             </ul>

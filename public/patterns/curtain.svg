@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
+  <!-- khayameya appliqué tile for the tent curtain: red ground, mustard / cream / indigo / olive cut-cloth -->
+  <rect width="160" height="160" fill="#a3221a"/>
+  <g transform="translate(80 80)">
+    <path d="M0 -58 L58 0 L0 58 L-58 0Z" fill="#1f2c5c"/>
+    <path d="M0 -50 L50 0 L0 50 L-50 0Z" fill="none" stroke="#f3e3c3" stroke-width="2" stroke-dasharray="3 3"/>
+    <rect x="-30" y="-30" width="60" height="60" fill="#e4a72e" transform="rotate(45)"/>
+    <rect x="-30" y="-30" width="60" height="60" fill="#e4a72e"/>
+    <circle r="26" fill="#a3221a"/>
+    <circle r="19" fill="#f3e3c3"/>
+    <path d="M0 -15 L4 -4 L15 0 L4 4 L0 15 L-4 4 L-15 0 L-4 -4Z" fill="#7d1812"/>
+    <circle r="3.5" fill="#1f2c5c"/>
+  </g>
+  <g fill="#5b6b2a">
+    <path d="M0 -18 L18 0 L0 18 L-18 0Z"/><path d="M160 -18 L178 0 L160 18 L142 0Z"/>
+    <path d="M0 142 L18 160 L0 178 L-18 160Z"/><path d="M160 142 L178 160 L160 178 L142 160Z"/>
+  </g>
+  <g fill="#f3e3c3">
+    <circle cx="0" cy="0" r="5"/><circle cx="160" cy="0" r="5"/><circle cx="0" cy="160" r="5"/><circle cx="160" cy="160" r="5"/>
+  </g>
+  <rect x="3" y="3" width="154" height="154" fill="none" stroke="#f3e3c3" stroke-opacity=".35" stroke-width="1.2" stroke-dasharray="4 4"/>
+</svg>

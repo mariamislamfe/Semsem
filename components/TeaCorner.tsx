@@ -1,263 +1,294 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import type { MenuItem } from "@/lib/types";
-import { formatPrice, toArabicDigits } from "@/lib/format";
+import { formatPrice } from "@/lib/format";
+import { AddControl } from "./AddControl";
 import { useMotionPref } from "./MotionPref";
 import { useOrder } from "./OrderContext";
 
-/** Liquid colour per drink — a sensible guess from the name, with a tea default. */
-function liquidFor(item: MenuItem) {
-  const n = `${item.nameAr} ${item.nameEn ?? ""}`.toLowerCase();
-  // mint tea is plain tea with two leaves floating in it
-  if (/نعناع|mint/.test(n)) return { color: "#b5481c", cold: false, leaves: true };
-  if (/قهوة|coffee/.test(n)) return { color: "#3a2214", cold: false, leaves: false };
-  if (/بيبسي|كولا|غازي|soda|cola|pepsi/.test(n)) return { color: "#2b1a12", cold: true, leaves: false };
-  return { color: "#b5481c", cold: !item.tags.includes("ساخن") && item.tags.includes("بارد"), leaves: false };
+/**
+ * قول للقهوجي — in an Egyptian café nobody orders "a tea"; you tell the waiter
+ * exactly how you take it. Build your glass (loose or bag, light or strong,
+ * how many spoons, mint or not), watch it change on the brass tray, and the
+ * order phrase writes itself the way you'd call it out. "Tell the waiter"
+ * pours it and puts it in the order, with the details attached.
+ */
+
+type Kind = "كشري" | "فتلة";
+const STRENGTH = ["خفيف", "وسط", "تقيل"] as const;
+const SUGAR = ["سادة", "ع الريحة", "مظبوط", "زيادة", "زيادة أوي"] as const;
+const LIQUID = ["#c86a22", "#962f0c", "#4f1606"];
+
+function phrase(kind: Kind, strength: number, sugar: number, mint: boolean) {
+  const parts = [`واحد شاي ${kind}${strength === 1 ? "" : ` ${STRENGTH[strength]}`}`];
+  parts.push(sugar === 0 ? "سادة" : `سكره ${SUGAR[sugar]}`);
+  if (mint) parts.push("بالنعناع");
+  return parts.join("، ");
 }
 
-/**
- * ركن الشاي — a kettle that is always on the fire. Pick a drink and the kettle
- * tips, a thin stream falls, and the glass fills with that drink. Warm on
- * purpose: this is the part of the tent where people stay.
- */
 export function TeaCorner() {
-  const { categories, qty, add, remove } = useOrder();
-  const drinks = categories.find((c) => c.slug === "drinks")?.items ?? [];
-  const [selectedId, setSelectedId] = useState<string | null>(drinks[0]?.id ?? null);
-  const [pour, setPour] = useState(0);
+  const { categories, add, addNote } = useOrder();
   const { reduced } = useMotionPref();
+  const drinks = categories.find((c) => c.slug === "drinks")?.items ?? [];
+  const mintTea = drinks.find((d) => /نعناع|mint/i.test(`${d.nameAr} ${d.nameEn ?? ""}`));
+  const tea = drinks.find((d) => d !== mintTea && /شاي|tea/i.test(`${d.nameAr} ${d.nameEn ?? ""}`));
+  const others = drinks.filter((d) => d !== tea && d !== mintTea);
 
-  const selected = drinks.find((d) => d.id === selectedId) ?? drinks[0];
-  if (!selected) return null;
-  const liquid = liquidFor(selected);
+  const [kind, setKind] = useState<Kind>("كشري");
+  const [strength, setStrength] = useState(2);
+  const [sugar, setSugar] = useState(2);
+  const [mint, setMint] = useState(false);
+  const [drops, setDrops] = useState<number[]>([]);
+  const [pour, setPour] = useState(0);
+  const [said, setSaid] = useState<string | null>(null);
 
-  const choose = (id: string) => {
-    setSelectedId(id);
-    setPour((n) => n + 1);
+  const item: MenuItem | undefined = mint ? (mintTea ?? tea) : tea;
+  const orderable = !!item && item.isAvailable && item.price !== null;
+  const words = phrase(kind, strength, sugar, mint);
+
+  const setSugarTo = (n: number) => {
+    const next = Math.max(0, Math.min(4, n));
+    if (next > sugar && !reduced) setDrops((d) => [...d.slice(-4), Date.now()]);
+    setSugar(next);
+  };
+
+  const tell = () => {
+    if (!item || !orderable) return;
+    add(item.id);
+    addNote(words);
+    setPour((p) => p + 1);
+    setSaid(words);
   };
 
   return (
     <section
       id="shay"
+      aria-label="ركن الشاي"
       className="relative overflow-hidden px-5 py-24 md:px-10 md:py-32"
-      style={{
-        background:
-          "radial-gradient(ellipse 55% 50% at 28% 82%, rgba(217,105,42,.32), transparent 70%), #1f2c5c",
-      }}
+      style={{ background: "radial-gradient(ellipse 60% 55% at 26% 70%, rgba(217,120,50,.28), transparent 70%), #120b07" }}
     >
-      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
-        {/* ───── the list ───── */}
+      <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
         <div>
-          <header>
-            <h2 className="mt-4 font-display text-[clamp(3rem,8vw,5.5rem)] leading-[1.1] text-cream">ركن الشاي</h2>
-            <p className="mt-4 text-lg leading-8 text-sand">الكنكة على النار من بدري.. اختار كوبايتك وهنصبّها لك.</p>
-          </header>
+          <h2 className="font-display text-[clamp(3rem,8vw,5.5rem)] leading-[1.05] text-cream">قول للقهوجي</h2>
+          <p className="mt-3 max-w-[38ch] text-lg leading-8 text-sand">مفيش حد بيطلب «شاي» وخلاص. ظبّط كوبايتك، وإحنا هنعملها زي ما بتحبها.</p>
 
-          <ul className="mt-8 space-y-3" role="radiogroup" aria-label="المشروبات">
-            {drinks.map((d) => {
-              const on = d.id === selected.id;
-              const q = qty(d.id);
-              const orderable = d.isAvailable && d.price !== null;
-              return (
-                <li
-                  key={d.id}
-                  className={`flex items-center gap-3 rounded-2xl border px-4 py-3 transition-colors ${
-                    on ? "border-amber bg-amber/10" : "border-cream/15 bg-ink/40"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    role="radio"
-                    aria-checked={on}
-                    onClick={() => choose(d.id)}
-                    className="min-w-0 flex-1 text-start"
-                  >
-                    <span className="block text-lg font-semibold text-cream">{d.nameAr}</span>
-                    <span className="block text-sm text-sand">
-                      {d.nameEn && <bdi className="me-3 text-sand/70">{d.nameEn}</bdi>}
-                      <bdi>{formatPrice(d.price)}</bdi>
-                      {!d.isAvailable && <span className="ms-2 text-cloth">خلصت النهارده</span>}
+          <div className="mt-8 space-y-6">
+            <Choice label="الشاي" options={["كشري", "فتلة"] as const} value={kind} onChange={setKind} />
+            <Choice label="التقل" options={STRENGTH} value={STRENGTH[strength]!} onChange={(v) => setStrength(STRENGTH.indexOf(v))} />
+
+            <fieldset>
+              <legend className="mb-2 text-sm text-sand">السكر</legend>
+              <div className="flex items-center gap-4">
+                <button type="button" onClick={() => setSugarTo(sugar - 1)} aria-label="معلقة أقل" className="h-11 w-11 rounded-full border border-cream/30 text-xl text-cream hover:border-amber hover:text-amber">
+                  −
+                </button>
+                <div className="flex gap-1.5" aria-hidden>
+                  {[0, 1, 2, 3].map((i) => (
+                    <span key={i} className={`h-3 w-6 rounded-full transition-colors ${i < sugar ? "bg-cream" : "bg-cream/15"}`} />
+                  ))}
+                </div>
+                <button type="button" onClick={() => setSugarTo(sugar + 1)} aria-label="معلقة زيادة" className="h-11 w-11 rounded-full bg-amber text-xl font-semibold text-ink hover:bg-cream">
+                  +
+                </button>
+                <span className="min-w-24 text-cream" aria-live="polite">
+                  {SUGAR[sugar]}
+                </span>
+              </div>
+            </fieldset>
+
+            <label className="flex w-fit cursor-pointer items-center gap-3 text-cream">
+              <input type="checkbox" checked={mint} onChange={(e) => setMint(e.target.checked)} className="peer sr-only" />
+              <span className="relative h-7 w-12 rounded-full bg-cream/15 transition-colors peer-checked:bg-[#5f9f3f] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-amber">
+                <span className={`absolute top-1 h-5 w-5 rounded-full bg-cream transition-all ${mint ? "start-6" : "start-1"}`} />
+              </span>
+              بالنعناع
+            </label>
+          </div>
+
+          {/* the order, as you'd call it out */}
+          <div className="mt-9 border-t border-cream/15 pt-6">
+            <p className="font-display text-[clamp(1.7rem,3.2vw,2.5rem)] leading-snug text-amber" aria-live="polite">
+              «{words}»
+            </p>
+            <div className="mt-5 flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                onClick={tell}
+                disabled={!orderable}
+                className="rounded-full bg-amber px-7 py-3 font-semibold text-ink transition-colors hover:bg-cream disabled:opacity-50"
+              >
+                قول للقهوجي
+              </button>
+              {item && <span className="text-cream/80">{formatPrice(item.price)}</span>}
+              <AnimatePresence>
+                {said && (
+                  <motion.span key={pour} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="text-sm text-[#a4b862]">
+                    حاضر! اتضاف لطلبك
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {others.length > 0 && (
+            <div className="mt-10">
+              <p className="text-sm text-sand">مش شاي؟</p>
+              <ul className="mt-3 divide-y divide-cream/10">
+                {others.map((d) => (
+                  <li key={d.id} className="flex items-center justify-between gap-4 py-3">
+                    <span className="text-cream">
+                      {d.nameAr} <span className="ms-2 text-sm text-sand">{formatPrice(d.price)}</span>
                     </span>
-                  </button>
-
-                  {orderable &&
-                    (q === 0 ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          choose(d.id);
-                          add(d.id);
-                        }}
-                        aria-label={`ضيف ${d.nameAr} للطلب`}
-                        className="shrink-0 rounded-full bg-amber px-4 py-1.5 text-sm font-semibold text-ink transition-colors hover:bg-cream"
-                      >
-                        + ضيف
-                      </button>
-                    ) : (
-                      <div className="flex shrink-0 items-center gap-1 rounded-full border border-amber/70 p-1">
-                        <button type="button" onClick={() => remove(d.id)} aria-label={`قلّل ${d.nameAr}`} className="h-8 w-8 rounded-full text-lg text-cream hover:bg-cream/10">
-                          −
-                        </button>
-                        <span className="min-w-6 text-center tabular-nums text-cream" aria-live="polite">
-                          {toArabicDigits(q)}
-                        </span>
-                        <button type="button" onClick={() => add(d.id)} aria-label={`زوّد ${d.nameAr}`} className="h-8 w-8 rounded-full bg-amber text-lg font-semibold text-ink hover:bg-cream">
-                          +
-                        </button>
-                      </div>
-                    ))}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* ───── the kettle ───── */}
-        <div>
-          <svg viewBox="0 0 620 420" className="mx-auto w-full max-w-[560px]" role="img" aria-label={`كنكة شاي على النار وكوباية ${selected.nameAr}`}>
-            <defs>
-              <linearGradient id="copper" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#e0a060" />
-                <stop offset=".5" stopColor="#b86a3c" />
-                <stop offset="1" stopColor="#6b3a1c" />
-              </linearGradient>
-              <clipPath id="glassClip">
-                <path d="M425 250 L435 366 Q436 378 448 378 L492 378 Q504 378 505 366 L515 250 Z" />
-              </clipPath>
-            </defs>
-
-            {/* warm floor */}
-            <ellipse cx="310" cy="392" rx="290" ry="22" fill="rgba(242,169,59,.16)" />
-
-            {/* stove + flame */}
-            <rect x="60" y="322" width="190" height="44" rx="8" fill="#2a1a12" />
-            <rect x="60" y="322" width="190" height="6" rx="3" fill="#4a2c1c" />
-            <g transform="translate(155 322)">
-              {[-34, -12, 12, 34].map((dx, i) => (
-                <path
-                  key={dx}
-                  className="flame"
-                  d="M0 0 C-11 -9 -9 -26 0 -40 C9 -26 11 -9 0 0Z"
-                  fill={i % 2 ? "#f2a93b" : "#e0762a"}
-                  transform={`translate(${dx} 0)`}
-                  style={{ animationDelay: `${i * 0.18}s` }}
-                />
-              ))}
-            </g>
-
-            {/* kettle */}
-            <g transform="translate(0 -44)">
-            <motion.g
-              key={`k${pour}`}
-              style={{ transformOrigin: "155px 300px" }}
-              animate={reduced || pour === 0 ? undefined : { rotate: [0, 17, 17, 0] }}
-              transition={{ duration: 2.1, times: [0, 0.25, 0.75, 1], ease: "easeInOut" }}
-            >
-              <path d="M85 268 Q85 188 155 188 Q225 188 225 268 Q225 312 155 312 Q85 312 85 268Z" fill="url(#copper)" />
-              <path d="M118 192 Q155 150 192 192Z" fill="url(#copper)" />
-              <circle cx="155" cy="150" r="9" fill="#e0a060" />
-              <path d="M214 238 Q262 232 284 190 L298 198 Q274 258 222 276Z" fill="url(#copper)" />
-              <path d="M88 232 Q38 232 46 278 Q54 304 94 292" fill="none" stroke="#6b3a1c" strokeWidth="10" strokeLinecap="round" />
-              <path d="M96 240 Q96 205 150 200" fill="none" stroke="rgba(255,255,255,.25)" strokeWidth="5" strokeLinecap="round" />
-            </motion.g>
-            </g>
-
-            {/* steam from the kettle */}
-            {!reduced &&
-              [0, 1, 2].map((i) => (
-                <ellipse
-                  key={i}
-                  className="steam"
-                  cx={150 + i * 14}
-                  cy="96"
-                  rx="7"
-                  ry="16"
-                  fill="rgba(243,230,204,.45)"
-                  style={{ animationDelay: `${i * 0.9}s`, transformBox: "fill-box" }}
-                />
-              ))}
-
-            {/* the stream */}
-            <motion.path
-              key={`s${pour}`}
-              d="M300 156 Q336 172 338 214 Q340 258 470 266"
-              fill="none"
-              stroke={liquid.color}
-              strokeWidth="5"
-              strokeLinecap="round"
-              initial={{ pathLength: 0, opacity: 0 }}
-              animate={pour === 0 || reduced ? { pathLength: 0, opacity: 0 } : { pathLength: [0, 1, 1, 0], opacity: [0, 1, 1, 0] }}
-              transition={{ duration: 2.1, times: [0, 0.25, 0.75, 1] }}
-            />
-
-            {/* glass + saucer */}
-            <ellipse cx="470" cy="382" rx="76" ry="12" fill="#3a2418" />
-            <ellipse cx="470" cy="378" rx="62" ry="8" fill="#5a3826" />
-            <g clipPath="url(#glassClip)">
-              <rect x="420" y="240" width="100" height="140" fill="rgba(243,230,204,.06)" />
-              <motion.rect
-                key={`l${pour}-${selected.id}`}
-                x="420"
-                y="270"
-                width="100"
-                height="110"
-                fill={liquid.color}
-                style={{ transformOrigin: "470px 380px" }}
-                initial={{ scaleY: pour === 0 ? 0.78 : 0.05 }}
-                animate={{ scaleY: 0.92 }}
-                transition={{ duration: pour === 0 ? 0 : 1.4, delay: pour === 0 ? 0 : 0.5, ease: "easeOut" }}
-              />
-              {liquid.leaves && (
-                <g className="leaf-bob">
-                  <path d="M452 292 Q470 276 486 290 Q470 306 452 292Z" fill="#5f9f3f" stroke="#3f7a2a" strokeWidth="1.2" transform="rotate(-18 469 291)" />
-                  <path d="M474 304 Q490 290 504 302 Q490 316 474 304Z" fill="#6fb34a" stroke="#3f7a2a" strokeWidth="1.2" transform="rotate(22 489 303)" />
-                </g>
-              )}
-              {liquid.cold &&
-                [0, 1, 2, 3, 4].map((i) => (
-                  <circle
-                    key={i}
-                    className="bubble"
-                    cx={445 + i * 14}
-                    cy="368"
-                    r={2 + (i % 2)}
-                    fill="rgba(243,230,204,.55)"
-                    style={{ animationDelay: `${i * 0.5}s` }}
-                  />
+                    <AddControl item={d} />
+                  </li>
                 ))}
-            </g>
-            <path
-              d="M425 250 L435 366 Q436 378 448 378 L492 378 Q504 378 505 366 L515 250"
-              fill="none"
-              stroke="rgba(243,230,204,.7)"
-              strokeWidth="3"
-              strokeLinejoin="round"
-            />
-            <path d="M436 262 L443 360" stroke="rgba(255,255,255,.3)" strokeWidth="4" strokeLinecap="round" />
-
-            {/* steam from the glass (hot drinks only) */}
-            {!reduced &&
-              !liquid.cold &&
-              [0, 1].map((i) => (
-                <ellipse
-                  key={i}
-                  className="steam"
-                  cx={462 + i * 16}
-                  cy="236"
-                  rx="6"
-                  ry="14"
-                  fill="rgba(243,230,204,.4)"
-                  style={{ animationDelay: `${i * 1.1}s`, transformBox: "fill-box" }}
-                />
-              ))}
-          </svg>
-          <p className="mt-2 text-center text-sm text-sand">
-            {selected.nameAr} <span className="text-amber">— {formatPrice(selected.price)}</span>
-          </p>
+              </ul>
+            </div>
+          )}
         </div>
+
+        <Glass kind={kind} strength={strength} mint={mint} drops={drops} pour={pour} reduced={reduced} />
       </div>
     </section>
+  );
+}
+
+function Choice<T extends string>({ label, options, value, onChange }: { label: string; options: readonly T[]; value: T; onChange: (v: T) => void }) {
+  return (
+    <fieldset>
+      <legend className="mb-2 text-sm text-sand">{label}</legend>
+      <div className="inline-flex rounded-full border border-cream/20 p-1">
+        {options.map((o) => (
+          <button
+            key={o}
+            type="button"
+            aria-pressed={o === value}
+            onClick={() => onChange(o)}
+            className={`rounded-full px-5 py-2 text-[0.95rem] transition-colors ${o === value ? "bg-cream text-ink" : "text-cream hover:text-amber"}`}
+          >
+            {o}
+          </button>
+        ))}
+      </div>
+    </fieldset>
+  );
+}
+
+/** The Egyptian tea glass on a brass tray, drawn so every choice shows. */
+function Glass({ kind, strength, mint, drops, pour, reduced }: { kind: Kind; strength: number; mint: boolean; drops: number[]; pour: number; reduced: boolean }) {
+  const color = LIQUID[strength]!;
+  // glass: flared lip at the top, ribbed lower third
+  const outer = "M132 118 L268 118 L254 352 Q252 366 238 366 L162 366 Q148 366 146 352 Z";
+  return (
+    <svg viewBox="0 0 400 440" className="order-first mx-auto w-full max-w-[260px] sm:max-w-[340px] lg:order-none lg:max-w-[460px]" role="img" aria-label="كوباية شاي على صينية نحاس">
+      <defs>
+        <radialGradient id="brass" cx=".45" cy=".4" r=".7">
+          <stop offset="0" stopColor="#f2c27a" />
+          <stop offset=".55" stopColor="#c08038" />
+          <stop offset="1" stopColor="#6e3d14" />
+        </radialGradient>
+        <clipPath id="glass-in">
+          <path d="M138 124 L262 124 L249 348 Q247 360 235 360 L165 360 Q153 360 151 348 Z" />
+        </clipPath>
+        <linearGradient id="tea-depth" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity=".18" />
+          <stop offset="1" stopColor="#000" stopOpacity=".35" />
+        </linearGradient>
+      </defs>
+
+      {/* brass tray */}
+      <ellipse cx="200" cy="378" rx="186" ry="44" fill="#2a1408" opacity=".6" />
+      <ellipse cx="200" cy="368" rx="180" ry="42" fill="url(#brass)" />
+      <ellipse cx="200" cy="366" rx="150" ry="32" fill="none" stroke="#7a4516" strokeWidth="2" />
+      <ellipse cx="200" cy="366" rx="130" ry="26" fill="none" stroke="#f6d59a" strokeOpacity=".6" strokeDasharray="3 5" />
+      <ellipse cx="200" cy="364" rx="66" ry="12" fill="#5a2e0e" opacity=".55" />
+
+      {/* stream when the order is called */}
+      <motion.path
+        key={`s${pour}`}
+        d="M200 -10 L200 150"
+        stroke={color}
+        strokeWidth="6"
+        strokeLinecap="round"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={pour === 0 || reduced ? { opacity: 0 } : { pathLength: [0, 1, 1], opacity: [1, 1, 0] }}
+        transition={{ duration: 1.6, times: [0, 0.35, 1] }}
+      />
+
+      {/* the tea */}
+      <g clipPath="url(#glass-in)">
+        <rect x="120" y="100" width="160" height="280" fill="rgba(243,227,195,.05)" />
+        <motion.g
+          key={`l${pour}`}
+          style={{ transformOrigin: "200px 360px" }}
+          initial={{ scaleY: pour === 0 || reduced ? 1 : 0.08 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.2, delay: 0.25, ease: "easeOut" }}
+        >
+          <motion.rect x="120" y="150" width="160" height="230" animate={{ fill: color }} transition={{ duration: 0.6 }} />
+          <rect x="120" y="150" width="160" height="230" fill="url(#tea-depth)" />
+          {/* loose tea settles at the bottom of a كشري glass */}
+          {kind === "كشري" && [0, 1, 2, 3, 4, 5, 6].map((i) => <circle key={i} cx={168 + i * 11} cy={352 - (i % 3) * 3} r={2.4} fill="#1d0702" opacity=".8" />)}
+          {/* the froth on a glass poured from height */}
+          <ellipse cx="200" cy="151" rx="60" ry="5" fill="#e9c08a" opacity=".85" />
+        </motion.g>
+
+        {/* sugar: each spoon drops a cube that sinks and dissolves */}
+        {drops.map((id, i) => (
+          <motion.rect
+            key={id}
+            x={186 + (i % 3) * 12}
+            width="12"
+            height="12"
+            rx="2"
+            fill="#fbf6ea"
+            initial={{ y: 60, opacity: 1, rotate: 0 }}
+            animate={{ y: [60, 146, 300], opacity: [1, 1, 0], rotate: [0, 30, 80] }}
+            transition={{ duration: 1.6, times: [0, 0.3, 1], ease: "easeIn" }}
+          />
+        ))}
+
+        <AnimatePresence>
+          {mint && (
+            <motion.g initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} className="leaf-bob">
+              <path d="M170 156 Q190 138 208 154 Q190 170 170 156Z" fill="#5f9f3f" stroke="#3f7a2a" strokeWidth="1.2" transform="rotate(-14 189 155)" />
+              <path d="M200 160 Q218 146 234 158 Q218 172 200 160Z" fill="#6fb34a" stroke="#3f7a2a" strokeWidth="1.2" transform="rotate(18 217 159)" />
+            </motion.g>
+          )}
+        </AnimatePresence>
+      </g>
+
+      {/* drops land: a ring on the surface */}
+      {drops.map((id) => (
+        <motion.ellipse key={`r${id}`} cx="200" cy="152" rx="10" ry="2.5" fill="none" stroke="#f3e3c3" initial={{ opacity: 0, scale: 1 }} animate={{ opacity: [0, 0.8, 0], scale: [1, 1, 5] }} transition={{ duration: 0.9, delay: 0.42 }} />
+      ))}
+
+      {/* glass: rim, ribs, highlight */}
+      <path d={outer} fill="none" stroke="rgba(243,227,195,.75)" strokeWidth="3" strokeLinejoin="round" />
+      <ellipse cx="200" cy="118" rx="68" ry="6" fill="none" stroke="rgba(243,227,195,.6)" strokeWidth="2" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <path key={i} d={`M${158 + i * 12} 278 L${160 + i * 11.4} 360`} stroke="rgba(243,227,195,.22)" strokeWidth="3" />
+      ))}
+      <path d="M146 140 L156 330" stroke="rgba(255,255,255,.28)" strokeWidth="5" strokeLinecap="round" />
+
+      {/* a bag's string and tag hang over the rim */}
+      <AnimatePresence>
+        {kind === "فتلة" && (
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+            <path d="M232 230 Q250 150 262 120 Q270 104 280 126 L284 160" fill="none" stroke="#efe6d4" strokeWidth="1.5" />
+            <rect x="272" y="160" width="26" height="30" rx="2" fill="#e4a72e" />
+            <rect x="276" y="166" width="18" height="4" fill="#7d1812" />
+          </motion.g>
+        )}
+      </AnimatePresence>
+
+      {/* steam */}
+      {!reduced &&
+        [0, 1, 2].map((i) => (
+          <ellipse key={i} className="steam" cx={180 + i * 20} cy="96" rx="7" ry="18" fill="rgba(243,227,195,.4)" style={{ animationDelay: `${i * 0.9}s`, transformBox: "fill-box" }} />
+        ))}
+    </svg>
   );
 }

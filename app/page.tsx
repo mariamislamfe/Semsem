@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { Dawn } from "@/components/Dawn";
 import { Footer } from "@/components/Footer";
-import { FanousHero } from "@/components/FanousHero";
+import { CurtainHero } from "@/components/CurtainHero";
 import { MenuSection } from "@/components/MenuSection";
 import { NightNav } from "@/components/NightNav";
 import { Reserve } from "@/components/Reserve";
@@ -30,7 +30,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <NightNav />
       <main id="top">
-        <FanousHero />
+        <CurtainHero />
         <MenuSection categories={menu.categories} isSample={isSample} />
         <Story />
         <Reserve />

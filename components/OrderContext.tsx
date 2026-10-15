@@ -20,6 +20,10 @@ interface Ctx {
   add: (id: string) => void;
   remove: (id: string) => void;
   clear: () => void;
+  /** free-text lines that travel with the order, e.g. "شاي تقيل، سكر مظبوط" */
+  notes: string[];
+  addNote: (text: string) => void;
+  removeNote: (i: number) => void;
 }
 
 const OrderCtx = createContext<Ctx | null>(null);
@@ -63,7 +67,13 @@ export function OrderProvider({
       }),
     [],
   );
-  const clear = useCallback(() => setCart(new Map()), []);
+  const [notes, setNotes] = useState<string[]>([]);
+  const addNote = useCallback((text: string) => setNotes((n) => [...n, text].slice(-10)), []);
+  const removeNote = useCallback((i: number) => setNotes((n) => n.filter((_, k) => k !== i)), []);
+  const clear = useCallback(() => {
+    setCart(new Map());
+    setNotes([]);
+  }, []);
 
   const value = useMemo<Ctx>(() => {
     const lines: CartLine[] = [];
@@ -89,8 +99,11 @@ export function OrderProvider({
       add,
       remove,
       clear,
+      notes,
+      addNote,
+      removeNote,
     };
-  }, [cart, categories, index, add, remove, clear]);
+  }, [cart, categories, index, add, remove, clear, notes, addNote, removeNote]);
 
   return <OrderCtx.Provider value={value}>{children}</OrderCtx.Provider>;
 }
