@@ -44,7 +44,7 @@ export function Reserve() {
 
   return (
     <section id="ihgez" className="relative bg-cloth px-5 py-20 md:px-10 md:py-28">
-      <div aria-hidden className="khayameya pointer-events-none absolute inset-0 opacity-[0.14] mix-blend-multiply" style={{ backgroundSize: "150px 150px" }} />
+      <div aria-hidden className="khayameya pointer-events-none absolute inset-0 opacity-[0.12]" style={{ backgroundSize: "150px 150px" }} />
       <div className="relative mx-auto grid max-w-5xl gap-12 md:grid-cols-[1fr_1.3fr]">
         <header>
           <h2 className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">احجز مكانك</h2>

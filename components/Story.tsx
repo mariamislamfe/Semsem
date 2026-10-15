@@ -69,11 +69,6 @@ export function Story() {
           </div>
         </figure>
 
-        <figure className="relative aspect-[3/2] overflow-hidden rounded-[2px] lg:col-span-6 lg:col-start-1">
-          <div data-drift className="absolute -inset-y-[12%] inset-x-0">
-            <Image src={assets.tentNight.src} alt={assets.tentNight.alt} fill sizes="(min-width:1024px) 55vw, 92vw" className="object-cover" />
-          </div>
-        </figure>
       </div>
 
       <ul className="mx-auto mt-24 grid max-w-6xl gap-10 md:grid-cols-3">

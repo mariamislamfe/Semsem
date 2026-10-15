@@ -16,21 +16,17 @@ cloth. The site is built from exactly that.
 
 | Moment | File | What it does |
 | --- | --- | --- |
-| The fanous | `components/FanousHero.tsx`, `lib/fanousGL.ts` | a real photo of a fanous rendered through a small WebGL shader: the flame flickers, heat shimmers, the light spreads out as it is lit, and your pointer/finger is a second light that reveals the khayameya on the tent wall. Scrolling pushes into the lantern until its red glass becomes the tablecloth |
-| السفرة | `components/Sofra.tsx` | the long Ramadan table: the section pins and a red runner travels right-to-left (Arabic reading direction); every dish is a plate that slides onto the cloth. A thread at the bottom shows progress and jumps between categories |
-| ركن الشاي | `components/TeaCorner.tsx` | khayameya indigo; the kettle pours the drink you pick |
-| القعدة | `components/Story.tsx` | photographs of the Ramadan night and a sentence that lights up word by word |
+| The door | `components/CurtainHero.tsx` | two khayameya curtains cut into strips that fold like real pleats (CSS 3D accordion). The name is printed on the cloth, so it folds and splits with it; the curtain breathes, ripples under your pointer/finger, and gathers to the sides as you scroll to reveal the lit fanous inside |
+| الصينية (menu) | `components/Sofra.tsx` | categories on top; the chosen one arrives on an arc-shaped copper tray, dishes sliding along the curve. Swipe/drag or arrows to turn it; the last stop asks «عايز حاجة تانية؟» |
+| قول للقهوجي | `components/TeaCorner.tsx` | build your tea the Egyptian way (كشري/فتلة, light/strong, sugar spoons, mint): the glass changes live and the order phrase writes itself; it is added to the order with that note |
+| القعدة | `components/Story.tsx` | a photograph of the Ramadan night and a sentence that lights up word by word |
 | احجز | `components/Reserve.tsx` | party size and a plan of the tent (floor seating vs tables) |
 | Dawn | `components/Dawn.tsx` | the musaharati's drum and call |
 
 **Motion stack:** GSAP (ScrollTrigger, SplitText, `useGSAP`) with Lenis driven from
 GSAP's ticker, so pinned/scrubbed sections never fight smooth scrolling.
 
-**Performance guards:** the shader caps its resolution and pauses off screen; if a
-device can't hold ~30fps in its first seconds it fades itself out and the plain
-photograph stays. Without WebGL the photograph is shown from the first paint.
-Motion that plays by itself follows the OS reduce-motion setting (toggle in the
-footer); with reduced motion the table becomes a plain written menu.
+**Performance:** everything that moves is a transform or opacity; the curtain writes ~14–22 strip transforms per frame only while the door is on screen. Motion that plays by itself (breathing curtain, steam, flame) follows the OS reduce-motion setting (toggle in the footer).
 
 **Fonts:** Aref Ruqaa (display, matches the Ruq'ah logo) and Alexandria (body, by
 Egyptian type designer Mohamed Gaber).
