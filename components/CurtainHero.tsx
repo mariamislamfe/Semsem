@@ -187,7 +187,7 @@ export function CurtainHero() {
       {/* inside the tent */}
       <div data-room className="absolute inset-0 bg-[#0b0704]">
         {/* the far wall of the tent, barely lit */}
-        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "url(/patterns/curtain-beige.svg)", backgroundSize: "120px 120px" }} />
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "url(/patterns/curtain-dark.svg)", backgroundSize: "120px 120px" }} />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,transparent_0%,rgba(11,7,4,.85)_60%,#0b0704_100%)]" />
       </div>
       <div
@@ -227,12 +227,12 @@ export function CurtainHero() {
                 style={{ width: size.w + 0.6 }}
               >
                 <CurtainArt size={size} offset={slice * size.w} />
-                <div ref={(el) => { shades.current[i] = el; }} className="absolute inset-0 bg-[#3b2512] opacity-0 will-change-[opacity]" />
+                <div ref={(el) => { shades.current[i] = el; }} className="absolute inset-0 bg-black opacity-0 will-change-[opacity]" />
               </div>
             );
           })
         ) : (
-          <div className="absolute inset-0 bg-[#e7d7b8]" style={{ backgroundImage: "url(/patterns/curtain-beige.svg)", backgroundSize: "140px 140px" }} />
+          <div className="absolute inset-0 bg-[#24160d]" style={{ backgroundImage: "url(/patterns/curtain-dark.svg)", backgroundSize: "140px 140px" }} />
         )}
       </div>
 
@@ -242,11 +242,11 @@ export function CurtainHero() {
         <svg className="block h-[7svh] min-h-10 w-full" preserveAspectRatio="none" viewBox="0 0 400 40">
           <defs>
             <pattern id="valance" width="40" height="40" patternUnits="userSpaceOnUse">
-              <rect width="40" height="22" fill="#8f6a3a" />
-              <path d="M0 22 L20 40 L40 22Z" fill="#d8c3a0" />
-              <path d="M10 22 L20 32 L30 22Z" fill="#b38a4e" />
-              <path d="M0 6 H40" stroke="#f3e3c3" strokeWidth="1" strokeDasharray="2 2" />
-              <circle cx="20" cy="13" r="3" fill="#f3e3c3" />
+              <rect width="40" height="22" fill="#2f1d11" />
+              <path d="M0 22 L20 40 L40 22Z" fill="#5c3d20" />
+              <path d="M10 22 L20 32 L30 22Z" fill="#b8925a" />
+              <path d="M0 6 H40" stroke="#b8925a" strokeWidth="1" strokeDasharray="2 2" />
+              <circle cx="20" cy="13" r="3" fill="#c9a265" />
             </pattern>
           </defs>
           <rect width="400" height="40" fill="url(#valance)" />
@@ -272,8 +272,8 @@ function CurtainArt({ size, offset }: { size: Size; offset: number }) {
       style={{
         width: A,
         left: -offset,
-        backgroundColor: "#e7d7b8",
-        backgroundImage: "url(/patterns/curtain-beige.svg)",
+        backgroundColor: "#24160d",
+        backgroundImage: "url(/patterns/curtain-dark.svg)",
         backgroundSize: `${tile}px ${tile}px`,
         backgroundPosition: `${mid}px 0`,
       }}
@@ -285,7 +285,7 @@ function CurtainArt({ size, offset }: { size: Size; offset: number }) {
           left: mid - band * 2,
           width: band * 4,
           background:
-            "linear-gradient(90deg, transparent 0, transparent 6%, #8f6a3a 6%, #8f6a3a 44%, #f6ead2 44%, #f6ead2 56%, #8f6a3a 56%, #8f6a3a 94%, transparent 94%)",
+            "linear-gradient(90deg, transparent 0, transparent 6%, #5c3d20 6%, #5c3d20 44%, #c9a265 44%, #c9a265 56%, #5c3d20 56%, #5c3d20 94%, transparent 94%)",
         }}
       />
       {/* hem */}
@@ -293,24 +293,24 @@ function CurtainArt({ size, offset }: { size: Size; offset: number }) {
         className="absolute inset-x-0 bottom-0"
         style={{
           height: H * 0.09,
-          backgroundColor: "#8f6a3a",
+          backgroundColor: "#160d07",
           backgroundImage:
-            "linear-gradient(135deg, #d9b26a 25%, transparent 25%), linear-gradient(225deg, #d9b26a 25%, transparent 25%)",
+            "linear-gradient(135deg, #8c6a3c 25%, transparent 25%), linear-gradient(225deg, #8c6a3c 25%, transparent 25%)",
           backgroundSize: "36px 36px",
           backgroundPosition: "0 0",
-          borderTop: "3px dashed #f6ead2",
+          borderTop: "3px dashed #b8925a",
         }}
       />
       {/* light falls off toward the top and the floor */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/35" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/45" />
 
       {/* the name, sewn across the seam */}
       <div className="absolute inset-x-0 flex flex-col items-center" style={{ top: H * (W < 720 ? 0.26 : 0.2), opacity: "var(--ink)" }}>
         <span
-          className="font-display leading-[1.1] text-[#4a2c14]"
+          className="font-display leading-[1.1] text-[#f0dcb4]"
           style={{
             fontSize: W < 720 ? W * 0.42 : Math.min(W * 0.3, H * 0.42),
-            textShadow: "0 2px 0 rgba(255,250,235,.55)",
+            textShadow: "0 3px 0 #5c3d20",
           }}
         >
           سمسم
