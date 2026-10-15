@@ -84,6 +84,7 @@ export function CurtainHero() {
           end: "+=130%",
           pin: true,
           scrub: 0.8,
+          refreshPriority: 10,
           onUpdate: (self) => {
             if (!reduced) state.ripple = Math.min(0.5, state.ripple + Math.abs(self.getVelocity()) * 0.00003);
           },

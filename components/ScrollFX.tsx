@@ -59,8 +59,29 @@ export function ScrollFX() {
         );
       });
 
-      // fonts change line breaks: re-measure once they are in
-      document.fonts?.ready.then(() => ScrollTrigger.refresh());
+      // Sections settle after this runs (the hero's pin spacer, the tray's measured
+      // height, fonts). Whenever the page height changes, re-measure every trigger in
+      // page order — otherwise entrances fire early, while still below the screen.
+      let raf = 0;
+      let lastH = 0;
+      const remeasure = () => {
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => {
+          const h = document.documentElement.scrollHeight;
+          if (h === lastH) return;
+          lastH = h;
+          ScrollTrigger.sort();
+          ScrollTrigger.refresh();
+        });
+      };
+      const ro = new ResizeObserver(remeasure);
+      ro.observe(document.body);
+      document.fonts?.ready.then(remeasure);
+      remeasure();
+      return () => {
+        ro.disconnect();
+        cancelAnimationFrame(raf);
+      };
     },
     { dependencies: [reduced], revertOnUpdate: true },
   );
