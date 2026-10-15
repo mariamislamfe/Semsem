@@ -16,7 +16,7 @@ cloth. The site is built from exactly that.
 
 | Moment | File | What it does |
 | --- | --- | --- |
-| The door | `components/CurtainHero.tsx`, `lib/curtainGL.ts` | a velvet curtain rendered as real cloth in a WebGL shader: folds lit like velvet, a pelmet with gold fringe, the name سمسم and the embroidery folding with the fabric. It breathes, ripples under the pointer/finger, and gathers to the sides on scroll to reveal the welcome in warm light. Falls back to CSS 3D strips without WebGL or on slow devices |
+| The fanous | `components/LanternHero.tsx`, `lib/lanternGL.ts` | a pierced brass fanous, built from light, is lit on arrival and throws its pattern (stars, drops, coloured glass) over the walls, ceiling and floor of a dark room; every spot is ray-traced from the lantern to the room and projected in perspective. It swings on its chain toward the pointer/finger, sweeping the light. Scroll and the light leaves the walls to write سمسم, then the welcome appears. Static fallback without WebGL or on slow devices. (`CurtainHero.tsx` + `curtainGL.ts` keep the earlier velvet-curtain version.) |
 | الصينية (menu) | `components/Sofra.tsx` | categories on top; the chosen one arrives on an arc-shaped copper tray, dishes sliding along the curve. Swipe/drag or arrows to turn it; the last stop asks «عايز حاجة تانية؟» |
 | قول للقهوجي | `components/TeaCorner.tsx` | build your tea the Egyptian way (كشري/فتلة, light/strong, sugar spoons, mint): the glass changes live and the order phrase writes itself; it is added to the order with that note |
 | القعدة | `components/Story.tsx` | a photograph of the Ramadan night and a sentence that lights up word by word |
