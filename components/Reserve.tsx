@@ -45,20 +45,22 @@ export function Reserve() {
   return (
     <section id="ihgez" className="relative bg-cloth px-5 py-20 md:px-10 md:py-28">
       <div aria-hidden className="khayameya pointer-events-none absolute inset-0 opacity-[0.12]" style={{ backgroundSize: "150px 150px" }} />
-      <div className="relative mx-auto grid max-w-5xl gap-12 md:grid-cols-[1fr_1.3fr]">
-        <header>
-          <h2 className="mt-4 font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">احجز مكانك</h2>
-          <p className="mt-4 leading-8 text-cream/90">
+      <div className="relative mx-auto max-w-6xl">
+        <header className="flex flex-wrap items-end justify-between gap-x-12 gap-y-3">
+          <h2 className="font-display text-[clamp(2.8rem,7vw,5rem)] leading-[1.1] text-cream">احجز مكانك</h2>
+          <div className="max-w-md">
+          <p className="leading-8 text-cream/90">
             قولنا هتبقوا كام فرد، وعايزين تقعدوا على ترابيزة ولا على الأرض، والباقي علينا.
           </p>
           <p className="mt-4 text-sm leading-7 text-cream/75">
             ده طلب حجز مش تأكيد — هنكلّمك على الرقم لما يتأكّد.
           </p>
+          </div>
         </header>
 
-        <div>
+        <div className="mt-10">
           {result?.ok ? (
-            <div className="rounded-2xl border border-amber/40 bg-amber/5 p-8 text-center">
+            <div className="mx-auto max-w-2xl rounded-2xl border border-amber/40 bg-soot p-8 text-center">
               <p className="font-display text-5xl text-amber">وصلنا طلبك</p>
               <p className="mt-4 text-cream">{result.summary}</p>
               {result.demo && (
@@ -75,7 +77,8 @@ export function Reserve() {
               </button>
             </div>
           ) : (
-            <form onSubmit={submit} className="space-y-6 rounded-2xl border border-cream/10 bg-soot p-6 md:p-8">
+            <form onSubmit={submit} className="grid gap-x-12 gap-y-6 rounded-2xl border border-cream/10 bg-soot p-6 md:p-10 lg:grid-cols-2">
+              <div className="space-y-6">
               <fieldset>
                 <legend className="mb-3 text-sm text-sand">هتبقوا كام فرد؟</legend>
                 <div className="flex items-center justify-center gap-6">
@@ -103,30 +106,27 @@ export function Reserve() {
 
               <fieldset>
                 <legend className="mb-3 text-sm text-sand">تحبوا تقعدوا فين؟ اختاروا من الخريطة</legend>
-                <TentPlan seating={seating} onPick={setSeating} />
-                <div className="mt-3 grid grid-cols-3 gap-3">
+                <div className="mx-auto max-w-[400px]">
+                  <TentPlan seating={seating} onPick={setSeating} />
+                </div>
+                <div className="mt-2 flex justify-center gap-2">
                   {seatOptions.map((o) => (
                     <label
                       key={o.v}
-                      className={`cursor-pointer rounded-xl border px-2 py-3 text-center transition-colors ${
-                        seating === o.v ? "border-amber bg-amber/10 text-cream" : "border-cream/20 text-sand"
+                      className={`cursor-pointer rounded-full border px-4 py-1.5 text-sm transition-colors ${
+                        seating === o.v ? "border-amber bg-amber/10 text-cream" : "border-cream/20 text-sand hover:text-cream"
                       }`}
                     >
-                      <input
-                        type="radio"
-                        name="seat"
-                        value={o.v}
-                        checked={seating === o.v}
-                        onChange={() => setSeating(o.v)}
-                        className="sr-only"
-                      />
-                      <span className="block font-semibold">{o.label}</span>
-                      <span className="block text-xs text-sand/80">{o.hint}</span>
+                      <input type="radio" name="seat" value={o.v} checked={seating === o.v} onChange={() => setSeating(o.v)} className="sr-only" />
+                      {o.label}
                     </label>
                   ))}
                 </div>
               </fieldset>
 
+              </div>
+
+              <div className="flex flex-col gap-5">
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block text-sm text-sand">
                   اليوم
@@ -176,7 +176,7 @@ export function Reserve() {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 maxLength={300}
-                rows={2}
+                rows={3}
                 placeholder="أي ملاحظة؟ (عيد ميلاد، كرسي لطفل..)"
                 className={field}
               />
@@ -194,6 +194,7 @@ export function Reserve() {
               >
                 {pending ? "بنبعت.." : `احجز لـ ${toArabicDigits(party)} أفراد`}
               </button>
+              </div>
             </form>
           )}
         </div>

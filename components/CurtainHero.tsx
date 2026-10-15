@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { useLayoutEffect, useRef, useState } from "react";
-import { assets } from "@/lib/assets";
 import { useMotionPref } from "./MotionPref";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -162,7 +160,7 @@ export function CurtainHero() {
         s.style.transform = `translate3d(${left.toFixed(2)}px,0,0) rotateY(${rot.toFixed(4)}rad)`;
         const sin = Math.sin(phi);
         const shade = shades.current[i];
-        if (shade) shade.style.opacity = (lit ? 0.08 * sin : 0.12 + 0.62 * sin).toFixed(3);
+        if (shade) shade.style.opacity = (lit ? 0.06 * sin : 0.1 + 0.55 * sin).toFixed(3);
       };
 
       gsap.ticker.add(tick);
@@ -187,20 +185,23 @@ export function CurtainHero() {
       <h1 className="sr-only">سمسم — خيمة سحور رمضانية</h1>
 
       {/* inside the tent */}
-      <div data-room className="absolute inset-0">
-        <Image src={assets.heroFanous.src} alt={assets.heroFanous.alt} fill priority sizes="100vw" className="object-cover object-[70%_60%]" />
-        <div className="absolute inset-0 bg-gradient-to-l from-black/10 via-black/55 to-black/90" />
+      <div data-room className="absolute inset-0 bg-[#0b0704]">
+        {/* the far wall of the tent, barely lit */}
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "url(/patterns/curtain-beige.svg)", backgroundSize: "120px 120px" }} />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,transparent_0%,rgba(11,7,4,.85)_60%,#0b0704_100%)]" />
       </div>
       <div
         data-glow
         aria-hidden
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[140vmax] w-[40vmax] -translate-x-1/2 -translate-y-1/2 opacity-0"
-        style={{ background: "radial-gradient(ellipse at center, rgba(255,186,96,.55), rgba(217,105,42,.18) 40%, transparent 70%)" }}
+        className="pointer-events-none absolute left-1/2 top-[52%] h-[120vmax] w-[70vmax] -translate-x-1/2 -translate-y-1/2 opacity-0"
+        style={{ background: "radial-gradient(ellipse at center, rgba(255,214,150,.65), rgba(242,169,59,.28) 30%, rgba(217,105,42,.08) 55%, transparent 72%)" }}
       />
-      <div data-welcome className="invisible absolute inset-y-0 left-0 z-10 flex w-full flex-col items-center justify-center px-8 pt-16 text-center opacity-0 lg:left-[10vw] lg:w-[46%] lg:items-start lg:text-start">
-        <p className="font-display text-[clamp(3rem,6.4vw,5.8rem)] leading-[1.1] text-cream">اتفضّل.. البيت بيتك</p>
-        <p className="mt-4 max-w-[34ch] text-lg leading-8 text-cream/85">فول وطعمية وشاي على النار، ولمّة لحد الفجر. الليلة لسه مبدأتش.</p>
-        <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+      <div data-welcome className="invisible absolute inset-0 z-10 flex flex-col items-center justify-center px-8 pt-16 text-center opacity-0">
+        <p className="font-display text-[clamp(3.2rem,8vw,7rem)] leading-[1.1] text-cream" style={{ textShadow: "0 0 40px rgba(255,190,100,.45)" }}>
+          اتفضّل.. الخيمة مفتوحة
+        </p>
+        <p className="mt-4 max-w-[36ch] text-lg leading-8 text-cream/85">فول وطعمية وشاي على النار، ولمّة لحد الفجر. الليلة لسه مبدأتش.</p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           <a href="#ihgez" className="rounded-full bg-amber px-7 py-3 font-semibold text-ink transition-colors hover:bg-cream">
             احجز مكانك
           </a>
@@ -226,12 +227,12 @@ export function CurtainHero() {
                 style={{ width: size.w + 0.6 }}
               >
                 <CurtainArt size={size} offset={slice * size.w} />
-                <div ref={(el) => { shades.current[i] = el; }} className="absolute inset-0 bg-black opacity-0 will-change-[opacity]" />
+                <div ref={(el) => { shades.current[i] = el; }} className="absolute inset-0 bg-[#3b2512] opacity-0 will-change-[opacity]" />
               </div>
             );
           })
         ) : (
-          <div className="absolute inset-0 bg-cloth" style={{ backgroundImage: "url(/patterns/curtain.svg)", backgroundSize: "140px 140px" }} />
+          <div className="absolute inset-0 bg-[#e7d7b8]" style={{ backgroundImage: "url(/patterns/curtain-beige.svg)", backgroundSize: "140px 140px" }} />
         )}
       </div>
 
@@ -241,9 +242,9 @@ export function CurtainHero() {
         <svg className="block h-[7svh] min-h-10 w-full" preserveAspectRatio="none" viewBox="0 0 400 40">
           <defs>
             <pattern id="valance" width="40" height="40" patternUnits="userSpaceOnUse">
-              <rect width="40" height="22" fill="#1f2c5c" />
-              <path d="M0 22 L20 40 L40 22Z" fill="#a3221a" />
-              <path d="M10 22 L20 32 L30 22Z" fill="#e4a72e" />
+              <rect width="40" height="22" fill="#8f6a3a" />
+              <path d="M0 22 L20 40 L40 22Z" fill="#d8c3a0" />
+              <path d="M10 22 L20 32 L30 22Z" fill="#b38a4e" />
               <path d="M0 6 H40" stroke="#f3e3c3" strokeWidth="1" strokeDasharray="2 2" />
               <circle cx="20" cy="13" r="3" fill="#f3e3c3" />
             </pattern>
@@ -271,8 +272,8 @@ function CurtainArt({ size, offset }: { size: Size; offset: number }) {
       style={{
         width: A,
         left: -offset,
-        backgroundColor: "#a3221a",
-        backgroundImage: "url(/patterns/curtain.svg)",
+        backgroundColor: "#e7d7b8",
+        backgroundImage: "url(/patterns/curtain-beige.svg)",
         backgroundSize: `${tile}px ${tile}px`,
         backgroundPosition: `${mid}px 0`,
       }}
@@ -284,7 +285,7 @@ function CurtainArt({ size, offset }: { size: Size; offset: number }) {
           left: mid - band * 2,
           width: band * 4,
           background:
-            "linear-gradient(90deg, transparent 0, transparent 6%, #1f2c5c 6%, #1f2c5c 44%, #f3e3c3 44%, #f3e3c3 50%, #f3e3c3 50%, #f3e3c3 56%, #1f2c5c 56%, #1f2c5c 94%, transparent 94%)",
+            "linear-gradient(90deg, transparent 0, transparent 6%, #8f6a3a 6%, #8f6a3a 44%, #f6ead2 44%, #f6ead2 56%, #8f6a3a 56%, #8f6a3a 94%, transparent 94%)",
         }}
       />
       {/* hem */}
@@ -292,24 +293,24 @@ function CurtainArt({ size, offset }: { size: Size; offset: number }) {
         className="absolute inset-x-0 bottom-0"
         style={{
           height: H * 0.09,
-          backgroundColor: "#1f2c5c",
+          backgroundColor: "#8f6a3a",
           backgroundImage:
-            "linear-gradient(135deg, #e4a72e 25%, transparent 25%), linear-gradient(225deg, #e4a72e 25%, transparent 25%)",
+            "linear-gradient(135deg, #d9b26a 25%, transparent 25%), linear-gradient(225deg, #d9b26a 25%, transparent 25%)",
           backgroundSize: "36px 36px",
           backgroundPosition: "0 0",
-          borderTop: "3px dashed #f3e3c3",
+          borderTop: "3px dashed #f6ead2",
         }}
       />
       {/* light falls off toward the top and the floor */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/45 via-transparent to-black/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/35" />
 
       {/* the name, sewn across the seam */}
       <div className="absolute inset-x-0 flex flex-col items-center" style={{ top: H * (W < 720 ? 0.26 : 0.2), opacity: "var(--ink)" }}>
         <span
-          className="font-display leading-[1.1] text-cream"
+          className="font-display leading-[1.1] text-[#4a2c14]"
           style={{
             fontSize: W < 720 ? W * 0.42 : Math.min(W * 0.3, H * 0.42),
-            textShadow: "0 4px 0 #7d1812",
+            textShadow: "0 2px 0 rgba(255,250,235,.55)",
           }}
         >
           سمسم
