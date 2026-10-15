@@ -26,6 +26,26 @@ Photographer credits are on each photo page: `https://www.pexels.com/photo/<id>/
 | khan.webp | 17721305 |
 | tent-night.webp | 11703451 |
 
+## حيطة اللمة (public/images/wall, Pexels)
+| file | Pexels photo id |
+| --- | --- |
+| w01.webp | 29804283 |
+| w02.webp | 14512647 |
+| w03.webp | 1114041 |
+| w04.webp | 20488564 |
+| w05.webp | 20475941 |
+| w06.webp | 20488466 |
+| w07.webp | 20475943 |
+| w08.webp | 20488720 |
+| w09.webp | 36087668 |
+| w10.webp | 27177285 |
+| w11.webp | 17139821 |
+| w12.webp | 20475947 |
+| w13.webp | 17445518 |
+| w14.webp | 36068787 |
+| w15.webp | crop of khan.webp (17721305) |
+| w16.webp | crop of tent-night.webp (11703451) |
+
 ## Wikimedia Commons
 | file | Commons file | License |
 | --- | --- | --- |

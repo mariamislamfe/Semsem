@@ -19,7 +19,7 @@ cloth. The site is built from exactly that.
 | The fanous | `components/LanternHero.tsx`, `lib/lanternGL.ts` | a pierced brass fanous, built from light, is lit on arrival and throws its pattern (stars, drops, coloured glass) over the walls, ceiling and floor of a dark room; every spot is ray-traced from the lantern to the room and projected in perspective. It swings on its chain toward the pointer/finger, sweeping the light. Scroll and the light leaves the walls to write سمسم, then the welcome appears. Static fallback without WebGL or on slow devices. (`CurtainHero.tsx` + `curtainGL.ts` keep the earlier velvet-curtain version.) |
 | الصينية (menu) | `components/Sofra.tsx` | categories on top; the chosen one arrives on an arc-shaped copper tray, dishes sliding along the curve. Swipe/drag or arrows to turn it; the last stop asks «عايز حاجة تانية؟» |
 | قول للقهوجي | `components/TeaCorner.tsx` | build your tea the Egyptian way (كشري/فتلة, light/strong, sugar spoons, mint): the glass changes live and the order phrase writes itself; it is added to the order with that note |
-| القعدة | `components/Story.tsx` | a photograph of the Ramadan night and a sentence that lights up word by word |
+| حيطة اللمة | `components/Story.tsx` | a wall of polaroids clipped with wooden pegs to strings of little lights; the section pins and the wall travels past right-to-left, photos swing with scroll speed, tap one to take it off the wall; the last frame is empty, waiting for real Semsem photos (list in `lib/assets.ts` → `wallPhotos`) |
 | احجز | `components/Reserve.tsx` | party size and a plan of the tent (floor seating vs tables) |
 | Dawn | `components/Dawn.tsx` | the musaharati's drum and call |
 

@@ -32,19 +32,21 @@ interface Geo {
   half: number; // half the visible arc, radians
   bottom: number; // y of the lowest plate's top edge (θ = 0)
   height: number;
+  mobile: boolean;
 }
 
 function geometry(W: number): Geo {
   const mobile = W < 720;
-  const plate = mobile ? Math.min(W * 0.46, 200) : Math.min(Math.max(W * 0.135, 170), 230);
-  const R = mobile ? W * 1.05 : W * 0.62;
-  const step = (plate * (mobile ? 1.18 : 1.42)) / R;
-  const half = mobile ? 0.62 : 0.72;
+  // phones: one dish in front of you, its neighbours peeking in at the sides of the tray
+  const plate = mobile ? Math.min(W * 0.42, 180) : Math.min(Math.max(W * 0.135, 170), 230);
+  const R = mobile ? W * 1.7 : W * 0.62;
+  const step = (plate * (mobile ? 1.22 : 1.42)) / R;
+  const half = mobile ? step * 1.35 : 0.72;
   const rise = R * (1 - Math.cos(half));
-  const bottom = 30 + rise;
+  const bottom = 24 + rise;
   // plate + name/price/stepper under the lowest plate
-  const height = bottom + plate + (mobile ? 150 : 170);
-  return { W, plate, R, step, half, bottom, height };
+  const height = bottom + plate + (mobile ? 165 : 170);
+  return { W, plate, R, step, half, bottom, height, mobile };
 }
 
 type Slot = { kind: "dish"; item: MenuItem } | { kind: "more" };
@@ -54,7 +56,8 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
   const stage = useRef<HTMLDivElement>(null);
   const cards = useRef<Array<HTMLElement | null>>([]);
   const turn = useRef({ c: 0 }); // continuous index of the slot facing you
-  const drag = useRef<{ x: number; c: number } | null>(null);
+  const drag = useRef<{ x: number; c: number; lastX: number; lastT: number; v: number } | null>(null);
+  const dots = useRef<HTMLDivElement>(null);
   const [geo, setGeo] = useState<Geo | null>(null);
   const [slug, setSlug] = useState(categories[0]?.slug ?? "");
   const [written, setWritten] = useState(false);
@@ -79,6 +82,8 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
   /** Range the tray may turn through, so its ends never stand empty. */
   const limits = useCallback(() => {
     if (!geo) return { lo: 0, hi: 0 };
+    // phones turn the tray one dish at a time, so it can start and end on any dish
+    if (geo.mobile) return { lo: 0, hi: n - 1 };
     const fit = Math.floor(geo.half / geo.step); // slots that fit on each side of centre
     const mid = (n - 1) / 2;
     return { lo: Math.min(fit, mid), hi: Math.max(n - 1 - fit, mid) };
@@ -103,6 +108,18 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
       // the dish turns with the tray; the writing under it stays level
       const plateEl = el.querySelector<HTMLElement>("[data-turn]");
       if (plateEl) plateEl.style.transform = `rotate(${(-th * 180) / Math.PI}deg)`;
+      // on a phone only the dish in front of you is spelled out; its neighbours just peek in
+      const info = el.querySelector<HTMLElement>("[data-info]");
+      if (info) {
+        const o = geo.mobile ? gsap.utils.clamp(0, 1, 1 - Math.abs(c - i) * 1.4) : 1;
+        info.style.opacity = o.toFixed(3);
+        info.style.pointerEvents = o > 0.5 ? "" : "none";
+      }
+    }
+    const d = dots.current;
+    if (d) {
+      const at = Math.round(c);
+      Array.from(d.children).forEach((dot, k) => ((dot as HTMLElement).style.opacity = k === at ? "1" : "0.35"));
     }
   }, [geo]);
 
@@ -172,7 +189,7 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
   // drag / swipe the tray
   const onDown = (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest("button, a")) return;
-    drag.current = { x: e.clientX, c: turn.current.c };
+    drag.current = { x: e.clientX, c: turn.current.c, lastX: e.clientX, lastT: performance.now(), v: 0 };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     gsap.killTweensOf(turn.current);
   };
@@ -180,16 +197,25 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
     const d = drag.current;
     if (!d || !geo) return;
     const { lo, hi } = limits();
+    const now = performance.now();
+    const dt = Math.max(1, now - d.lastT);
+    // finger speed in slots per second, smoothed
+    d.v = d.v * 0.7 + (-(e.clientX - d.lastX) / (geo.R * geo.step) / (dt / 1000)) * 0.3;
+    d.lastX = e.clientX;
+    d.lastT = now;
     const raw = d.c - (e.clientX - d.x) / (geo.R * geo.step);
     // past the ends it resists instead of stopping dead
     turn.current.c = raw < lo ? lo - (lo - raw) * 0.3 : raw > hi ? hi + (raw - hi) * 0.3 : raw;
     render();
   };
   const onUp = () => {
-    if (!drag.current) return;
+    const d = drag.current;
+    if (!d) return;
     drag.current = null;
     const { lo, hi } = limits();
-    turnTo(gsap.utils.clamp(lo, hi, Math.round(turn.current.c)), 0.7);
+    // a flick carries on: land where the momentum would take it
+    const fling = gsap.utils.clamp(-2, 2, d.v * 0.22);
+    turnTo(gsap.utils.clamp(lo, hi, Math.round(turn.current.c + fling)), 0.8);
   };
 
   if (!current) return null;
@@ -264,9 +290,9 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
           >
             {s.kind === "dish" ? <DishPlate item={s.item} /> : <MorePlate others={others} onPick={choose} />}
             {s.kind === "dish" && (
-              <div className="mt-4 w-[150%]">
+              <div data-info className="mt-4 w-[170%] md:w-[150%]">
                 <h3 className="text-lg font-semibold text-cream md:text-xl">{s.item.nameAr}</h3>
-                {s.item.descriptionAr && <p className="mx-auto mt-1 line-clamp-2 max-w-[24ch] text-sm leading-6 text-cream/75">{s.item.descriptionAr}</p>}
+                {s.item.descriptionAr && <p className="mx-auto mt-1 line-clamp-2 max-w-[26ch] text-sm leading-6 text-cream/75">{s.item.descriptionAr}</p>}
                 <div className="mt-3 flex items-center justify-center gap-3">
                   <span className={`font-display text-2xl ${s.item.isAvailable ? "text-amber" : "text-cream/50 line-through"}`}>{formatPrice(s.item.price)}</span>
                   <AddControl item={s.item} />
@@ -276,17 +302,25 @@ export function Sofra({ categories, isSample, all }: { categories: CategoryWithI
           </article>
         ))}
 
-        {scrollable && (
-          <div className="pointer-events-none absolute inset-x-0 bottom-2 flex justify-center gap-3">
-            <button type="button" onClick={() => nudge(-1)} aria-label="اللي قبله" className="pointer-events-auto h-11 w-11 rounded-full border border-cream/50 text-cream hover:bg-cream hover:text-cloth-deep">
-              →
-            </button>
-            <button type="button" onClick={() => nudge(1)} aria-label="اللي بعده" className="pointer-events-auto h-11 w-11 rounded-full border border-cream/50 text-cream hover:bg-cream hover:text-cloth-deep">
-              ←
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* under the tray: where you are on it, and a way to turn it without dragging */}
+      {scrollable && (
+        <div className="relative mt-2 flex items-center justify-center gap-4">
+          <button type="button" onClick={() => nudge(-1)} aria-label="اللي قبله" className="h-11 w-11 rounded-full border border-cream/50 text-cream hover:bg-cream hover:text-cloth-deep">
+            →
+          </button>
+          <div ref={dots} aria-hidden className="flex gap-1.5">
+            {slots.map((s, i) => (
+              <span key={i} className={`h-1.5 rounded-full bg-cream transition-opacity ${s.kind === "more" ? "w-3" : "w-1.5"}`} style={{ opacity: i === 0 ? 1 : 0.35 }} />
+            ))}
+          </div>
+          <button type="button" onClick={() => nudge(1)} aria-label="اللي بعده" className="h-11 w-11 rounded-full border border-cream/50 text-cream hover:bg-cream hover:text-cloth-deep">
+            ←
+          </button>
+        </div>
+      )}
+      {scrollable && geo?.mobile && <p className="relative mt-2 text-center text-xs text-cream/70">اسحب الصينية يمين وشمال</p>}
 
       <div className="relative mt-6 flex flex-col items-center gap-3 px-5 text-center">
         {isSample && <p className="max-w-[46ch] text-xs leading-6 text-cream/60">الأطباق والأسعار والصور تجريبية لحد ما يتعمد منيو سمسم الحقيقي.</p>}
