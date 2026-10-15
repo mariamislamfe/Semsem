@@ -3,7 +3,8 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createCurtainRenderer, type CurtainRenderer } from "@/lib/curtainGL";
 import { useMotionPref } from "./MotionPref";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -18,8 +19,8 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
  * runs through the pleats. Scroll and the curtains gather to the sides like
  * fabric, letting the light of the lantern inside spill out.
  *
- * Cost: ~2×(7–11) layers with a 3D transform, written once per frame while the
- * hero is on screen. No canvas, no blend modes, no filters.
+ * Two renderers share that motion: real cloth in WebGL (lib/curtainGL.ts) when the
+ * device can draw it smoothly, and the CSS strips below as the fallback.
  */
 
 const REST = 0.26; // pleat angle when closed (radians)
@@ -44,8 +45,37 @@ export function CurtainHero() {
   const door = useRef<HTMLDivElement>(null);
   const strips = useRef<Array<HTMLDivElement | null>>([]);
   const shades = useRef<Array<HTMLDivElement | null>>([]);
+  const stripsWrap = useRef<HTMLDivElement>(null);
+  const valance = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const glRef = useRef<CurtainRenderer | null>(null);
   const [size, setSize] = useState<Size | null>(null);
+  const [glOn, setGlOn] = useState(false);
   const { reduced } = useMotionPref();
+
+  // the real cloth: created once, dropped again if the device can't keep up
+  useEffect(() => {
+    const cv = canvas.current;
+    if (!cv) return;
+    let alive = true;
+    const probe = document.createElement("span");
+    probe.className = "font-display";
+    document.body.appendChild(probe);
+    const fontFamily = getComputedStyle(probe).fontFamily;
+    probe.remove();
+    createCurtainRenderer(cv, { fontFamily, calm: reduced }).then((r) => {
+      if (!alive) return r?.destroy();
+      if (!r) return;
+      glRef.current = r;
+      setGlOn(true);
+    });
+    return () => {
+      alive = false;
+      glRef.current?.destroy();
+      glRef.current = null;
+      setGlOn(false);
+    };
+  }, [reduced]);
 
   useLayoutEffect(() => {
     const el = door.current;
@@ -69,8 +99,11 @@ export function CurtainHero() {
         drop: reduced ? 0 : 1, // the curtain has just been let down: it swings, then settles
         ripple: 0,
         px: W / 2,
+        py: window.innerHeight / 2,
+        ink: 0,
         visible: true,
       };
+      gsap.to(state, { ink: 1, duration: 1.6, ease: "power2.out", delay: 0.5 });
 
       // the curtain is let down from the rod, then swings and settles
       if (!reduced) gsap.from(door.current, { yPercent: -100, duration: 1.3, ease: "power3.out" });
@@ -99,8 +132,9 @@ export function CurtainHero() {
       const onMove = (e: PointerEvent) => {
         if (reduced) return;
         const x = e.clientX;
-        const v = Math.abs(x - state.px);
+        const v = Math.abs(x - state.px) + Math.abs(e.clientY - state.py) * 0.5;
         state.px = x;
+        state.py = e.clientY;
         state.ripple = Math.min(0.55, state.ripple + v * 0.0016);
       };
       el.addEventListener("pointermove", onMove, { passive: true });
@@ -109,14 +143,36 @@ export function CurtainHero() {
       const io = new IntersectionObserver(([e]) => {
         state.visible = !!e?.isIntersecting;
         if (door.current) door.current.style.visibility = state.visible ? "" : "hidden";
+        if (valance.current) valance.current.style.visibility = state.visible ? "" : "hidden";
       });
       io.observe(el);
 
       const t0 = performance.now();
+      // performance guard for the WebGL cloth: watch ~2 s after it starts drawing
+      const guard = { start: 0, frames: 0, last: 0, done: false };
       const tick = () => {
         if (!state.visible) return;
-        const t = (performance.now() - t0) / 1000;
+        const now = performance.now();
+        const t = (now - t0) / 1000;
         state.ripple *= 0.965;
+        const cloth = glRef.current;
+        if (cloth) {
+          cloth.render({ open: state.open, drop: state.drop, ripple: state.ripple, mouseX: state.px, mouseY: state.py, ink: state.ink }, t);
+          if (!guard.done) {
+            if (!guard.start) guard.start = now;
+            else if (now - guard.start > 600) guard.frames++;
+            if (now - guard.start > 2600) {
+              guard.done = true;
+              // averaged over the window: slower than ~30 fps means this device should use the CSS cloth
+              if ((now - guard.start - 600) / Math.max(1, guard.frames) > 34) {
+                cloth.destroy();
+                glRef.current = null;
+                setGlOn(false);
+              }
+            }
+          }
+          return;
+        }
         const base = REST + (OPEN - REST) * state.open;
         const calm = 1 - state.open * 0.7;
         const fold = (sx: number, k: number) => {
@@ -213,7 +269,9 @@ export function CurtainHero() {
       </div>
 
       {/* the curtains */}
-      <div ref={door} aria-hidden className="absolute inset-x-0 bottom-0 top-16 z-20 [perspective:1500px]">
+      <div ref={door} aria-hidden className="absolute inset-x-0 bottom-0 top-14 z-20 [perspective:1500px]">
+        <canvas ref={canvas} className={`absolute inset-0 h-full w-full ${glOn ? "" : "invisible"}`} />
+        <div ref={stripsWrap} className={`absolute inset-x-0 bottom-0 top-2 ${glOn ? "hidden" : ""}`}>
         {size ? (
           Array.from({ length: size.N * 2 }, (_, i) => {
             // strip i shows this slice of the artwork (right panel counts from the right edge)
@@ -235,10 +293,11 @@ export function CurtainHero() {
         ) : (
           <div className="absolute inset-0 bg-[#24160d]" style={{ backgroundImage: "url(/patterns/curtain-dark.svg)", backgroundSize: "140px 140px" }} />
         )}
+        </div>
       </div>
 
       {/* rod and valance: the top of the door */}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-14 z-30">
+      <div ref={valance} aria-hidden className={`pointer-events-none absolute inset-x-0 top-14 z-30 ${glOn ? "hidden" : ""}`}>
         <div className="h-3 bg-gradient-to-b from-[#e3a160] via-[#9a5527] to-[#4a220c] shadow-[0_4px_10px_rgba(0,0,0,.6)]" />
         <svg className="block h-[7svh] min-h-10 w-full" preserveAspectRatio="none" viewBox="0 0 400 40">
           <defs>
