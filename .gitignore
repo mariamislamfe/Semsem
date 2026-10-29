@@ -6,3 +6,8 @@ node_modules
 next-env.d.ts
 *.tsbuildinfo
 .next-prod
+
+# Private / local files
+CLAUDE.md
+AGENTS.md
+.claude/
